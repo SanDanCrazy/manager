@@ -3,6 +3,7 @@ package fscut.manager.demo.controller;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import fscut.manager.demo.service.StoryService;
+import fscut.manager.demo.service.serviceImpl.StoryServiceImpl;
 import fscut.manager.demo.vo.StoryVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import java.util.Optional;
 public class StoryController {
 
     @Autowired
-    private StoryService storyService;
+    private StoryServiceImpl storyService;
 
     @PostMapping("newStory")
     public ResponseEntity<Story> newStory(@RequestBody StoryVO storyVO){
@@ -27,7 +28,9 @@ public class StoryController {
     }
 
     @PostMapping("editStory")
-    public ResponseEntity<Story> editStory(@RequestBody Story story){
+    public ResponseEntity<Story> editStory(@RequestBody StoryVO storyVO){
+        Story story = storyService.convertStoryVO2Story(storyVO);
+
         Optional<Story> optional = storyService.editStory(story);
         return ResponseEntity.ok(optional.get());
     }
@@ -45,8 +48,8 @@ public class StoryController {
 
     @GetMapping("history")
     public ResponseEntity<List<Story>> showStoryHistory(@RequestBody StoryUPK storyUPK){
-        Optional<List<Story>> stories = storyService.getStoryHistory(storyUPK);
-        return ResponseEntity.ok(stories.get());
+        List<Story> stories = storyService.getStoryHistory(storyUPK);
+        return ResponseEntity.ok(stories);
     }
 
     @DeleteMapping("deleteStory")

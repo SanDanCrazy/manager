@@ -1,5 +1,6 @@
 package fscut.manager.demo.vo;
 
+import fscut.manager.demo.entity.UPK.StoryUPK;
 import lombok.Data;
 
 import java.sql.Date;
@@ -7,7 +8,7 @@ import java.sql.Date;
 @Data
 public class StoryVO {
 
-    private Integer productId;
+    private StoryUPK storyUPK;
 
     private Integer customerId;
 
@@ -30,5 +31,7 @@ public class StoryVO {
     private String testName;
 
     private Date testTime;
+
+    private Date updateTime;
 
 }

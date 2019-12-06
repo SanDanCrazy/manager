@@ -1,6 +1,7 @@
 package fscut.manager.demo.service.serviceImpl;
 
 import fscut.manager.demo.dao.CustomerRepository;
+import fscut.manager.demo.dao.StoryEditionRepository;
 import fscut.manager.demo.dao.StoryRepository;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.StoryEdition;
@@ -25,8 +26,10 @@ public class StoryServiceImpl implements StoryService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private StoryEditionRepository storyEditionRepository;
+
     @Override
-    @Transactional(rollbackOn = Exception.class)
     public Optional<Story> addStory(Story story) {
 
         StoryUPK storyUPK = getNewStoryUPK(story.getStoryUPK().getProductId());
@@ -39,14 +42,12 @@ public class StoryServiceImpl implements StoryService {
 
         BeanUtils.copyProperties(story,storyEdition);
 
-        storyRepository.updateEdition(storyEdition);
+        storyEditionRepository.save(storyEdition);
 
-        Optional<Story> optional = Optional.ofNullable(story);
-        return optional;
+        return storyRepository.findById(storyUPK);
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
     public Optional<Story> editStory(Story story) {
 
         int edition = story.getStoryUPK().getEdition()+1;
@@ -55,8 +56,9 @@ public class StoryServiceImpl implements StoryService {
 
         StoryEdition storyEdition = new StoryEdition();
         BeanUtils.copyProperties(story,storyEdition);
-        storyRepository.updateEdition(storyEdition);
-        return Optional.ofNullable(story);
+        storyEditionRepository.updateEdition(storyEdition);
+
+        return storyRepository.findById(story.getStoryUPK());
 
     }
 
@@ -66,33 +68,33 @@ public class StoryServiceImpl implements StoryService {
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
     public void deleteStory(StoryUPK storyUPK) {
 
-        storyRepository.deleteById(storyUPK);
+        storyRepository.deleteStories(storyUPK);
 
         storyRepository.deleteEditionByStoryUPK(storyUPK);
     }
 
     @Override
-    public List<StoryEdition> getStoryEditionsByProductId(Integer productId) {
-        List<StoryEdition> storyEditions = storyRepository.findStoryEditionsByProductId(productId);
-        return storyEditions;
+    public List<StoryUPK> getStoryEditionsByProductId(Integer productId) {
+
+        List<StoryUPK> storyUPKS = storyEditionRepository.findStoryEditionsByProductId(productId);
+        return storyUPKS;
     }
 
     /**
      * 获取一个产品的所有最新需求
-     * @param storyEditions
+     * @param
      * @return
      */
     @Override
-    public List<Story> getStoriesByEditions(List<StoryEdition> storyEditions) {
+    public List<Story> getStoriesByEditions(List<StoryUPK> storyUPK) {
         List<Story> storyList = new ArrayList<>();
-        for (StoryEdition storyEdition: storyEditions
+        for (StoryUPK s: storyUPK
              ) {
-            storyList.add(storyRepository.findStoryByEdition(storyEdition));
+            storyList.add(storyRepository.findStoryByEdition(s));
         }
-        return null;
+        return storyList;
     }
 
     @Override
@@ -101,8 +103,8 @@ public class StoryServiceImpl implements StoryService {
     }
 
     @Override
-    public Optional<List<Story>> getStoryHistory(StoryUPK storyUPK) {
-        Optional<List<Story>> stories = storyRepository.findStoriesByStoryUPK(storyUPK);
+    public List<Story> getStoryHistory(StoryUPK storyUPK) {
+        List<Story> stories = storyRepository.findStoriesByStoryUPK(storyUPK);
         return stories;
     }
 
@@ -112,10 +114,13 @@ public class StoryServiceImpl implements StoryService {
         StoryUPK storyUPK = new StoryUPK();
         Integer storyId = storyRepository.findLastedStoryId(productId);
         storyUPK.setProductId(productId);
-        if(storyId <= 0){
+        if(storyId == null){
             storyUPK.setStoryId(1);
+            System.out.println("wow");
+        }else{
+            System.out.println("nice");
+            storyUPK.setStoryId(storyId+1);
         }
-        storyUPK.setStoryId(storyId);
         storyUPK.setEdition(1);
         return storyUPK;
     }
@@ -123,8 +128,8 @@ public class StoryServiceImpl implements StoryService {
     @Override
     public Story convertStoryVO2Story(StoryVO storyVO) {
         Story story = new Story();
-        story.getStoryUPK().setProductId(storyVO.getProductId());
         BeanUtils.copyProperties(storyVO,story);
+        story.getStoryUPK().setStoryId(storyVO.getStoryUPK().getStoryId());
         story.setDesignId(customerRepository.findIdByRealName(storyVO.getDesignName()));
         story.setDevId(customerRepository.findIdByRealName(storyVO.getDevelopName()));
         story.setTestId(customerRepository.findIdByRealName(storyVO.getTestName()));

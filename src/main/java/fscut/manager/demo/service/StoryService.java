@@ -17,11 +17,11 @@ public interface StoryService {
 
     void deleteStory(StoryUPK storyUPK);
 
-    List<StoryEdition> getStoryEditionsByProductId(Integer productId);
+    List<StoryUPK> getStoryEditionsByProductId(Integer productId);
 
-    List<Story> getStoriesByEditions(List<StoryEdition> storyEditions);
+    List<Story> getStoriesByEditions(List<StoryUPK> storyUPKS);
 
-    Optional<List<Story>> getStoryHistory(StoryUPK storyUPK);
+    List<Story> getStoryHistory(StoryUPK storyUPK);
 
     StoryUPK getNewStoryUPK(Integer productId);
 

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer,Integer>{
 
-    @Query(value = "select id from customer where real_name = ?1", nativeQuery = true)
+    @Query(value = "select id from customer where realname = ?1", nativeQuery = true)
     Integer findIdByRealName(String realName);
 
 

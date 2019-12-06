@@ -11,7 +11,7 @@ import java.sql.Date;
 @Table(name = "story")
 public class Story {
 
-    public interface StoryListSimpleView{};
+    public interface StoryListSimpleView{}
 
     @EmbeddedId
     private StoryUPK storyUPK;

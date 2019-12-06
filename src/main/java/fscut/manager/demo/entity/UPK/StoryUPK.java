@@ -1,6 +1,7 @@
 package fscut.manager.demo.entity.UPK;
 
 import lombok.Data;
+import lombok.NonNull;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -20,6 +21,12 @@ public class StoryUPK implements Serializable{
     private Integer edition;
 
     public StoryUPK() {
+    }
+
+    public StoryUPK(Integer productId, Integer storyId, Integer edition) {
+        this.productId = productId;
+        this.storyId = storyId;
+        this.edition = edition;
     }
 
     @Override
