@@ -1,0 +1,44 @@
+package fscut.manager.demo.entity.UPK;
+
+import lombok.Data;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import java.io.Serializable;
+
+@Embeddable
+@Data
+public class StoryUPK implements Serializable{
+
+    @Column(name = "product_id")
+    private Integer productId;
+
+    @Column(name = "story_id")
+    private Integer storyId;
+
+    @Column(name = "edition")
+    private Integer edition;
+
+    public StoryUPK() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        StoryUPK storyUPK = (StoryUPK) o;
+
+        if (!productId.equals(storyUPK.productId)) return false;
+        if (!storyId.equals(storyUPK.storyId)) return false;
+        return edition.equals(storyUPK.edition);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = productId.hashCode();
+        result = 31 * result + storyId.hashCode();
+        result = 31 * result + edition.hashCode();
+        return result;
+    }
+}
