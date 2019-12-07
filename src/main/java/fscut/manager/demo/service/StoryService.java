@@ -1,10 +1,12 @@
 package fscut.manager.demo.service;
 
+import fscut.manager.demo.dto.StoryDetailDTO;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.StoryEdition;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import fscut.manager.demo.vo.StoryVO;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +27,7 @@ public interface StoryService {
 
     StoryUPK getNewStoryUPK(Integer productId);
 
-    Optional<Story> getStoryInfo(Story story);
+    StoryDetailDTO getStoryInfo(StoryUPK storyUPK);
 
     List<Story> getStoriesByProductId(Integer productId);
 

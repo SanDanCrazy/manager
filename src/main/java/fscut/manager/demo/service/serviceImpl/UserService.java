@@ -4,7 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import fscut.manager.demo.dao.CustomerRepository;
 import fscut.manager.demo.dto.UserDto;
+import fscut.manager.demo.entity.Customer;
+import fscut.manager.demo.service.StoryService;
 import fscut.manager.demo.util.JwtUtils;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +24,11 @@ public class UserService {
 
     private RedisTemplate<String,String> redisTemplate;
 
-    public UserService(RedisTemplate<String,String> redisTemplate){
+    private CustomerRepository customerRepository;
+
+    public UserService(RedisTemplate<String,String> redisTemplate, CustomerRepository customerRepository){
         this.redisTemplate = redisTemplate;
+        this.customerRepository = customerRepository;
     }
 
     /**
@@ -58,7 +64,6 @@ public class UserService {
      */
     public void deleteLoginInfo(String username) {
 
-
     	 redisTemplate.delete("token:"+username);
 
     }
@@ -71,9 +76,10 @@ public class UserService {
     //todo
     public UserDto getUserInfo(String userName) {
     	UserDto user = new UserDto();
-    	user.setUserId(1);
-    	user.setUsername("admin");
-    	user.setEncryptPwd(new Sha256Hash("123456", encryptSalt).toHex());
+    	Customer customer = customerRepository.findCustomerByUsername(userName);
+    	user.setUserId(customer.getId());
+    	user.setUsername(userName);
+    	user.setEncryptPwd(new Sha256Hash(customer.getPassword(), encryptSalt).toHex());
     	return user;
     }
     

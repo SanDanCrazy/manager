@@ -1,5 +1,6 @@
 package fscut.manager.demo.controller;
 
+import fscut.manager.demo.dto.StoryDetailDTO;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import fscut.manager.demo.service.StoryService;
@@ -17,7 +18,7 @@ import java.util.Optional;
 public class StoryController {
 
     @Autowired
-    private StoryServiceImpl storyService;
+    private StoryService storyService;
 
     @PostMapping("newStory")
     public ResponseEntity<Story> newStory(@RequestBody StoryVO storyVO){
@@ -41,10 +42,11 @@ public class StoryController {
         return ResponseEntity.ok(stories);
     }
 
-//    @GetMapping("Story")
-//    public ResponseEntity<StoryDetailDTO> showStoryInfo(@RequestBody StoryUPK storyUPK){
-//
-//    }
+    @GetMapping("Story")
+    public ResponseEntity<StoryDetailDTO> showStoryInfo(@RequestBody StoryUPK storyUPK){
+        StoryDetailDTO storyDetailDTO = storyService.getStoryInfo(storyUPK);
+        return ResponseEntity.ok(storyDetailDTO);
+    }
 
     @GetMapping("history")
     public ResponseEntity<List<Story>> showStoryHistory(@RequestBody StoryUPK storyUPK){

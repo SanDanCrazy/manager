@@ -35,7 +35,13 @@ public class DbShiroRealm extends AuthorizingRealm {
     public boolean supports(AuthenticationToken token) {
         return token instanceof UsernamePasswordToken;
     }
-	
+
+	/**
+	 * //todo 抛出登录失败错误
+	 * @param token
+	 * @return
+	 * @throws AuthenticationException
+	 */
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
 		UsernamePasswordToken userpasswordToken = (UsernamePasswordToken)token;

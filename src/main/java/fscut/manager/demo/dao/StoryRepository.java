@@ -15,17 +15,15 @@ import java.util.Optional;
 
 
 @Repository
-public interface StoryRepository extends JpaRepository<Story, StoryUPK>{
+public interface StoryRepository extends JpaRepository<Story, StoryUPK> {
 
-    @Query(value = "select story_id from story_edition where product_id = ?1 order by story_id DESC limit 1",nativeQuery = true)
+    @Query(value = "select story_id from story_edition where product_id = ?1 order by story_id DESC limit 1", nativeQuery = true)
     Integer findLastedStoryId(@Param("productId") Integer productId);
 
 
     @Modifying
-    @Transactional
     @Query(value = "delete from story_edition where product_id = :#{#storyUPK.productId} and story_id = :#{#storyUPK.storyId}", nativeQuery = true)
     Integer deleteEditionByStoryUPK(@Param("storyUPK") StoryUPK storyUPK);
-
 
 
     @Query(value = "select * from story where product_id = :#{#storyUPK.productId} and story_id = :#{#storyUPK.storyId} order by edition desc ", nativeQuery = true)
@@ -36,7 +34,6 @@ public interface StoryRepository extends JpaRepository<Story, StoryUPK>{
     Story findStoryByEdition(@Param("storyUPK") StoryUPK storyUPK);
 
     @Modifying
-    @Transactional
-    @Query(value = "delete from story where product_id = :#{#storyUPK.productId} and story_id = :#{#storyUPK.storyId}" ,nativeQuery = true)
+    @Query(value = "delete from story where product_id = :#{#storyUPK.productId} and story_id = :#{#storyUPK.storyId}", nativeQuery = true)
     void deleteStories(@Param("storyUPK") StoryUPK storyUPK);
 }

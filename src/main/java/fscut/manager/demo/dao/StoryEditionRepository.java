@@ -19,7 +19,6 @@ public interface StoryEditionRepository extends JpaRepository<StoryEdition, Stor
     List<StoryUPK> findStoryEditionsByProductId(@Param("productId") Integer productId);
 
     @Modifying
-    @Transactional
     @Query(value = "update story_edition set edition = :#{#storyEdition.storyUPK.edition} where product_id = :#{#storyEdition.storyUPK.productId} and story_id = :#{#storyEdition.storyUPK.storyId}",nativeQuery = true)
     void updateEdition(@Param("storyEdition") StoryEdition storyEdition);
 }

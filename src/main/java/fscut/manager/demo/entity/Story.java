@@ -1,14 +1,17 @@
 package fscut.manager.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Table(name = "story")
+@JsonInclude(Include.NON_NULL)
 public class Story {
 
     public interface StoryListSimpleView{}

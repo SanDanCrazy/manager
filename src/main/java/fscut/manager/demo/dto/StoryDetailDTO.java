@@ -1,11 +1,23 @@
 package fscut.manager.demo.dto;
 
+import com.sun.xml.internal.ws.developer.Serialization;
 import fscut.manager.demo.entity.Story;
+import lombok.Data;
 
-public class StoryDetailDTO {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+public class StoryDetailDTO implements Serializable{
 
     private Story story;
 
-    private String storyHistoryInfoString;
+    private List<Story> storyList;
+
+    public StoryDetailDTO(){
+        storyList = new ArrayList<Story>();
+    }
+
 
 }
