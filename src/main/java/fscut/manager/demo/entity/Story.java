@@ -7,7 +7,7 @@ import fscut.manager.demo.entity.UPK.StoryUPK;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Date;
 
 @Entity
 @Table(name = "story")
@@ -53,7 +53,7 @@ public class Story {
     private Integer editId;
 
     @Column(name = "update_time", nullable = false)
-    private Date updateTime;
+    private java.util.Date updateTime;
 
     public Story() {
     }
@@ -158,11 +158,11 @@ public class Story {
         this.editId = editId;
     }
 
-    public Date getUpdateTime() {
+    public java.util.Date getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(java.util.Date updateTime) {
         this.updateTime = updateTime;
     }
 }

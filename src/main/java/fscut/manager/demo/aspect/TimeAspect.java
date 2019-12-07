@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 
-
 public class TimeAspect {
 
     private final static Logger log = LoggerFactory.getLogger(TimeAspect.class);
