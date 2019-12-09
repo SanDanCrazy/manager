@@ -33,5 +33,5 @@ public interface StoryService {
 
     Story convertStoryVO2Story(StoryVO storyVO);
 
-    //创建一个返回需求历史信息的函数
+
 }
