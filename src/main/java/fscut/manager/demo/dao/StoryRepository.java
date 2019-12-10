@@ -3,6 +3,8 @@ package fscut.manager.demo.dao;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.StoryEdition;
 import fscut.manager.demo.entity.UPK.StoryUPK;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -36,4 +38,7 @@ public interface StoryRepository extends JpaRepository<Story, StoryUPK> {
     @Modifying
     @Query(value = "delete from story where product_id = :#{#storyUPK.productId} and story_id = :#{#storyUPK.storyId}", nativeQuery = true)
     void deleteStories(@Param("storyUPK") StoryUPK storyUPK);
+
+    Page<Story> findByNameContains(String name, Pageable pageable);
+
 }

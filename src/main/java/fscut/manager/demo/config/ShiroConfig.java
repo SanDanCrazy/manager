@@ -4,7 +4,7 @@ import fscut.manager.demo.filter.AnyRolesAuthorizationFilter;
 import fscut.manager.demo.filter.JwtAuthFilter;
 import fscut.manager.demo.util.DbShiroRealm;
 import fscut.manager.demo.util.JWTShiroRealm;
-import fscut.manager.demo.service.serviceImpl.UserService;
+import fscut.manager.demo.service.serviceimpl.UserService;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
@@ -97,7 +97,7 @@ public class ShiroConfig {
         chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,authcToken,anyRole[admin,manager]"); //只允许admin或manager角色的用户访问
         chainDefinition.addPathDefinition("/article/list", "noSessionCreation,authcToken");
         chainDefinition.addPathDefinition("/article/*", "noSessionCreation,authcToken[permissive]");
-        chainDefinition.addPathDefinition("/**", "noSessionCreation,authcToken");
+        chainDefinition.addPathDefinition("/**", "noSessionCreation,anon");
         return chainDefinition;
     }
 

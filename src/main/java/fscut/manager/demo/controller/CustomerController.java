@@ -2,7 +2,7 @@ package fscut.manager.demo.controller;
 
 
 import fscut.manager.demo.dto.UserDto;
-import fscut.manager.demo.service.serviceImpl.UserService;
+import fscut.manager.demo.service.serviceimpl.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;

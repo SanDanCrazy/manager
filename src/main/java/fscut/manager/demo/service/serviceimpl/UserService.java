@@ -1,4 +1,4 @@
-package fscut.manager.demo.service.serviceImpl;
+package fscut.manager.demo.service.serviceimpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,10 +7,8 @@ import java.util.concurrent.TimeUnit;
 import fscut.manager.demo.dao.CustomerRepository;
 import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Customer;
-import fscut.manager.demo.service.StoryService;
 import fscut.manager.demo.util.JwtUtils;
 import org.apache.shiro.crypto.hash.Sha256Hash;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 

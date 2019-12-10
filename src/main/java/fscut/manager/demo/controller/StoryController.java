@@ -4,7 +4,6 @@ import fscut.manager.demo.dto.StoryDetailDTO;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import fscut.manager.demo.service.StoryService;
-import fscut.manager.demo.service.serviceImpl.StoryServiceImpl;
 import fscut.manager.demo.vo.StoryVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +14,14 @@ import java.util.Optional;
 
 
 @RestController
+@CrossOrigin
 public class StoryController {
 
     @Autowired
     private StoryService storyService;
 
     @PostMapping("newStory")
-    public ResponseEntity<Story> newStory(@RequestBody StoryVO storyVO){
+    public ResponseEntity<Story> newStory(StoryVO storyVO){
         Story story = storyService.convertStoryVO2Story(storyVO);
 
         Optional<Story> optional = storyService.addStory(story);
@@ -29,7 +29,7 @@ public class StoryController {
     }
 
     @PostMapping("editStory")
-    public ResponseEntity<Story> editStory(@RequestBody StoryVO storyVO){
+    public ResponseEntity<Story> editStory(StoryVO storyVO){
         Story story = storyService.convertStoryVO2Story(storyVO);
 
         Optional<Story> optional = storyService.editStory(story);
@@ -43,22 +43,23 @@ public class StoryController {
     }
 
     @GetMapping("Story")
-    public ResponseEntity<StoryDetailDTO> showStoryInfo(@RequestBody StoryUPK storyUPK){
+    public ResponseEntity<StoryDetailDTO> showStoryInfo(StoryUPK storyUPK) {
         StoryDetailDTO storyDetailDTO = storyService.getStoryInfo(storyUPK);
         return ResponseEntity.ok(storyDetailDTO);
     }
 
     @GetMapping("history")
-    public ResponseEntity<List<Story>> showStoryHistory(@RequestBody StoryUPK storyUPK){
+    public ResponseEntity<List<Story>> showStoryHistory(StoryUPK storyUPK) {
         List<Story> stories = storyService.getStoryHistory(storyUPK);
         return ResponseEntity.ok(stories);
     }
 
-    @DeleteMapping("deleteStory")
-    public ResponseEntity<String> deleteStory(@RequestBody StoryUPK storyUPK){
+    @PutMapping("deleteStory")
+    public ResponseEntity<String> deleteStory(StoryUPK storyUPK) {
         storyService.deleteStory(storyUPK);
         return ResponseEntity.ok("Delete successfully!");
     }
+
 
 
 }

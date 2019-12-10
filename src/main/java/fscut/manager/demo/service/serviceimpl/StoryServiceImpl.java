@@ -1,4 +1,4 @@
-package fscut.manager.demo.service.serviceImpl;
+package fscut.manager.demo.service.serviceimpl;
 
 import fscut.manager.demo.dao.CustomerRepository;
 import fscut.manager.demo.dao.StoryEditionRepository;
@@ -33,19 +33,12 @@ public class StoryServiceImpl implements StoryService {
     @Override
     @Transactional
     public Optional<Story> addStory(Story story) {
-
         StoryUPK storyUPK = getNewStoryUPK(story.getStoryUPK().getProductId());
-
         BeanUtils.copyProperties(storyUPK, story.getStoryUPK());
-
         storyRepository.save(story);
-
         StoryEdition storyEdition = new StoryEdition();
-
         BeanUtils.copyProperties(story, storyEdition);
-
         storyEditionRepository.save(storyEdition);
-
         return storyRepository.findById(storyUPK);
     }
 
@@ -81,15 +74,33 @@ public class StoryServiceImpl implements StoryService {
 
     public Story getDifferenceBetween2Stories(Story story1, Story story2){
         Story result = new Story();
-        if(!compareString(story1.getConclusion(), story2.getConclusion())) result.setConclusion(story1.getConclusion());
-        if(!compareString(story1.getDescription(), story2.getDescription())) result.setDescription(story1.getDescription());
-        if(!(story1.getDesignId() == story2.getDesignId())) result.setDesignId(story1.getDesignId());
-        if(!(story1.getDevId() == story2.getDevId())) result.setDevId(story1.getDevId());
-        if(!(story1.getTestId() == story2.getTestId())) result.setTestId(story1.getTestId());
-        if(!compareString(story1.getOrigin(), story2.getOrigin())) result.setOrigin(story1.getOrigin());
-        if(!(story1.getPutTime() == story2.getPutTime())) result.setPutTime(story1.getPutTime());
-        if(!compareString(story1.getStoryName(), story2.getStoryName())) result.setStoryName(story1.getStoryName());
-        if(!(story1.getStoryStatus() == story2.getStoryStatus())) result.setStoryStatus(story1.getStoryStatus());
+        if(!compareString(story1.getConclusion(), story2.getConclusion())) {
+            result.setConclusion(story1.getConclusion());
+        }
+        if(!compareString(story1.getDescription(), story2.getDescription())) {
+            result.setDescription(story1.getDescription());
+        }
+        if(!story1.getDesignId().equals(story2.getDesignId())) {
+            result.setDesignId(story1.getDesignId());
+        }
+        if(!story1.getDevId().equals(story2.getDevId())) {
+            result.setDevId(story1.getDevId());
+        }
+        if(!story1.getTestId().equals(story2.getTestId())) {
+            result.setTestId(story1.getTestId());
+        }
+        if(!compareString(story1.getOrigin(), story2.getOrigin())) {
+            result.setOrigin(story1.getOrigin());
+        }
+        if(!story1.getPutTime().equals(story2.getPutTime())) {
+            result.setPutTime(story1.getPutTime());
+        }
+        if(!compareString(story1.getStoryName(), story2.getStoryName())) {
+            result.setStoryName(story1.getStoryName());
+        }
+        if(!story1.getStoryStatus().equals(story2.getStoryStatus())) {
+            result.setStoryStatus(story1.getStoryStatus());
+        }
         result.setEditId(story1.getEditId());
         result.setUpdateTime(story1.getUpdateTime());
         return result;
@@ -123,7 +134,6 @@ public class StoryServiceImpl implements StoryService {
 
     /**
      * 获取一个产品的所有最新需求
-     *
      * @param
      * @return
      */

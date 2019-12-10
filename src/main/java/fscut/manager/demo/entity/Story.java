@@ -4,13 +4,16 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import fscut.manager.demo.entity.UPK.StoryUPK;
+import fscut.manager.demo.enums.StoryStatusEnum;
 import lombok.Data;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.sql.Date;
 
 @Entity
 @Table(name = "story")
+@DynamicUpdate
 @JsonInclude(Include.NON_NULL)
 public class Story {
 
@@ -29,7 +32,7 @@ public class Story {
     private String storyName;
 
     @Column(name = "story_status", nullable = false)
-    private Integer storyStatus;
+    private Integer storyStatus = StoryStatusEnum.NEW.getCode();
 
     @Column(name = "description")
     private String description;
