@@ -138,8 +138,15 @@ public class StoryServiceImpl implements StoryService {
     }
 
     @Override
-    public List<Story> getStoriesByProductId(Integer productId) {
-        return getStoriesByEditions(getStoryEditionsByProductId(productId));
+    public List<Story> getStoriesByProductId(Integer productId, Integer customerId) {
+        if(customerRepository.findProductIdsByCustomerId(customerId).contains(productId)){
+            return getStoriesByEditions(getStoryEditionsByProductId(productId));
+        }
+        else{
+            return null;
+        }
+
+
     }
 
     @Override

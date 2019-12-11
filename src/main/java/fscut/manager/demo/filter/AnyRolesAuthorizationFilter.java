@@ -3,13 +3,17 @@ package fscut.manager.demo.filter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.http.HttpStatus;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.AntPathMatcher;
 import org.apache.shiro.web.filter.authz.AuthorizationFilter;
 import org.apache.shiro.web.util.WebUtils;
+import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 public class AnyRolesAuthorizationFilter  extends AuthorizationFilter {
 	
@@ -29,6 +33,14 @@ public class AnyRolesAuthorizationFilter  extends AuthorizationFilter {
         if (rolesArray == null || rolesArray.length == 0) { //没有角色限制，有权限访问
             return true;
         }
+
+        HttpServletRequest request = WebUtils.toHttp(servletRequest);
+        String uri = request.getRequestURI();
+        System.out.println(uri);
+        String id = uri.replaceFirst("/product/","");
+        Integer productId = Integer.valueOf(id);
+        System.out.println(productId);
+
         for (String role : rolesArray) {
             if (subject.hasRole(role)) //若当前用户是rolesArray中的任何一个，则有权限访问
                 return true;

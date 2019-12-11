@@ -29,7 +29,7 @@ public interface StoryService {
 
     StoryDetailDTO getStoryInfo(StoryUPK storyUPK);
 
-    List<Story> getStoriesByProductId(Integer productId);
+    List<Story> getStoriesByProductId(Integer productId, Integer customerId);
 
     Story convertStoryVO2Story(StoryVO storyVO);
 

@@ -14,6 +14,7 @@ public class UserDto implements Serializable {
     private String encryptPwd;
     private Integer userId;
     private String salt;
+    private List<Integer> productIds;
     private List<String> roles;
 
 	public String getUsername() {
@@ -64,4 +65,11 @@ public class UserDto implements Serializable {
 		this.encryptPwd = encryptPwd;
 	}
 
+	public List<Integer> getProductIds() {
+		return productIds;
+	}
+
+	public void setProductIds(List<Integer> productIds) {
+		this.productIds = productIds;
+	}
 }

@@ -96,7 +96,7 @@ public class ShiroConfig {
         chainDefinition.addPathDefinition("/image/**", "anon");  
         chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,authcToken,anyRole[admin,manager]"); //只允许admin或manager角色的用户访问
         chainDefinition.addPathDefinition("/article/list", "noSessionCreation,authcToken");
-        chainDefinition.addPathDefinition("/article/*", "noSessionCreation,authcToken[permissive]");
+        chainDefinition.addPathDefinition("/article/**", "noSessionCreation,authcToken,anyRole[partner,manager,admin]");
         chainDefinition.addPathDefinition("/**", "noSessionCreation,authcToken");
         return chainDefinition;
     }

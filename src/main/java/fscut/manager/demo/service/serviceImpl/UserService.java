@@ -11,6 +11,7 @@ import fscut.manager.demo.service.StoryService;
 import fscut.manager.demo.util.JwtUtils;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -77,8 +78,10 @@ public class UserService {
     public UserDto getUserInfo(String userName) {
     	UserDto user = new UserDto();
     	Customer customer = customerRepository.findCustomerByUsername(userName);
+    	List<Integer> productIds = customerRepository.findProductIdsByCustomerId(customer.getId());
     	user.setUserId(customer.getId());
     	user.setUsername(userName);
+    	user.setProductIds(productIds);
     	user.setEncryptPwd(new Sha256Hash(customer.getPassword(), encryptSalt).toHex());
     	return user;
     }
@@ -89,8 +92,15 @@ public class UserService {
      * @return
      */
     //todo
-    public List<String> getUserRoles(Integer userId){
-    	return Arrays.asList("admin");
+    @Cacheable(value = "role")
+    public List<String> getUserRoles(Integer userId, List<Integer> productIds){
+        List<String> roles = customerRepository.findRolesByCustomerIdAndProductIds(userId, productIds);
+        for (String str: roles
+             ) {
+            System.out.println(str);
+        }
+        return roles;
+    	//return Arrays.asList("admin");
     }
 
 }
