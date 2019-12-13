@@ -10,8 +10,6 @@ public class StoryVO {
 
     private StoryUPK storyUPK;
 
-    private Integer customerId;
-
     private Integer origin;
 
     private Date putTime;
@@ -24,14 +22,14 @@ public class StoryVO {
 
     private String conclusion;
 
-    private String designName;
+    private Integer designId;
 
-    private String developName;
+    private Integer devId;
 
-    private String testName;
+    private Integer testId;
 
     private Date testTime;
 
-    private Date updateTime;
+    private java.util.Date updateTime;
 
 }

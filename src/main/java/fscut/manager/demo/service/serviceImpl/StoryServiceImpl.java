@@ -4,11 +4,14 @@ import fscut.manager.demo.dao.CustomerRepository;
 import fscut.manager.demo.dao.StoryEditionRepository;
 import fscut.manager.demo.dao.StoryRepository;
 import fscut.manager.demo.dto.StoryDetailDTO;
+import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.StoryEdition;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import fscut.manager.demo.service.StoryService;
 import fscut.manager.demo.vo.StoryVO;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -174,11 +177,9 @@ public class StoryServiceImpl implements StoryService {
     public Story convertStoryVO2Story(StoryVO storyVO) {
         Story story = new Story();
         BeanUtils.copyProperties(storyVO, story);
-        story.getStoryUPK().setStoryId(storyVO.getStoryUPK().getStoryId());
-        story.setDesignId(customerRepository.findIdByRealName(storyVO.getDesignName()));
-        story.setDevId(customerRepository.findIdByRealName(storyVO.getDevelopName()));
-        story.setTestId(customerRepository.findIdByRealName(storyVO.getTestName()));
-        story.setEditId(storyVO.getCustomerId());
+        Subject subject = SecurityUtils.getSubject();
+        UserDto user = (UserDto) subject.getPrincipal();
+        story.setEditId(user.getUserId());
         return story;
     }
 }

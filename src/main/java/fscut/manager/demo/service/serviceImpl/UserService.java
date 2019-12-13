@@ -9,7 +9,10 @@ import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Customer;
 import fscut.manager.demo.service.StoryService;
 import fscut.manager.demo.util.JwtUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.crypto.hash.Sha256Hash;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -79,6 +82,7 @@ public class UserService {
     	UserDto user = new UserDto();
     	Customer customer = customerRepository.findCustomerByUsername(userName);
     	List<Integer> productIds = customerRepository.findProductIdsByCustomerId(customer.getId());
+    	user.setRoles(getUserRoles(customer.getId()));
     	user.setUserId(customer.getId());
     	user.setUsername(userName);
     	user.setProductIds(productIds);
@@ -100,7 +104,31 @@ public class UserService {
             System.out.println(str);
         }
         return roles;
-    	//return Arrays.asList("admin");
+    }
+
+    public List<String> getUserRoles(Integer userId){
+        List<String> roles = customerRepository.findRolesByCustomerId(userId);
+        for (String str: roles
+        ) {
+            System.out.println(str);
+        }
+        return roles;
+    }
+
+
+    public boolean isUserAllowed(Integer productId, Integer userId){
+        if(customerRepository.findProductIdsByCustomerId(userId).contains(productId)){
+            return true;
+        }
+        return false;
+    }
+
+    public Void userAllowed(Integer productId){
+        Subject subject = SecurityUtils.getSubject();
+        UserDto user = (UserDto) subject.getPrincipal();
+        if(!isUserAllowed(productId, user.getUserId()))
+            throw new UnauthorizedException();
+        return null;
     }
 
 }

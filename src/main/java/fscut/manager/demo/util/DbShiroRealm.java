@@ -60,7 +60,7 @@ public class DbShiroRealm extends AuthorizingRealm {
         UserDto user = (UserDto) principals.getPrimaryPrincipal();
         List<String> roles = user.getRoles();
         if(roles == null) {
-            roles = userService.getUserRoles(user.getUserId(), user.getProductIds());
+            roles = userService.getUserRoles(user.getUserId());
             user.setRoles(roles);
         }
         if (roles != null)

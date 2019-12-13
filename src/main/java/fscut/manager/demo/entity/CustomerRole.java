@@ -1,5 +1,6 @@
 package fscut.manager.demo.entity;
 
+import fscut.manager.demo.entity.UPK.CustomerRoleUPK;
 import fscut.manager.demo.entity.UPK.RolePermissionUPK;
 import lombok.Data;
 
@@ -13,5 +14,9 @@ import javax.persistence.Table;
 public class CustomerRole {
 
     @EmbeddedId
-    private RolePermissionUPK rolePermissionUPK;
+    private CustomerRoleUPK customerRoleUPK;
+
+    public CustomerRole(){
+        this.customerRoleUPK = new CustomerRoleUPK();
+    }
 }
