@@ -5,10 +5,12 @@ import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import fscut.manager.demo.service.StoryService;
 import fscut.manager.demo.vo.StoryVO;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +19,7 @@ import java.util.Optional;
 @CrossOrigin
 public class StoryController {
 
-    @Autowired
+    @Resource
     private StoryService storyService;
 
     @PostMapping("newStory")
@@ -25,7 +27,11 @@ public class StoryController {
         Story story = storyService.convertStoryVO2Story(storyVO);
 
         Optional<Story> optional = storyService.addStory(story);
-        return ResponseEntity.ok(optional.get());
+        Story newStory = new Story();
+        if (optional.isPresent()) {
+            newStory = optional.get();
+        }
+        return ResponseEntity.ok(newStory);
     }
 
     @PostMapping("editStory")
@@ -33,10 +39,14 @@ public class StoryController {
         Story story = storyService.convertStoryVO2Story(storyVO);
 
         Optional<Story> optional = storyService.editStory(story);
-        return ResponseEntity.ok(optional.get());
+        Story editedStory = new Story();
+        if (optional.isPresent()) {
+            editedStory = optional.get();
+        }
+        return ResponseEntity.ok(editedStory);
     }
 
-    @GetMapping("product/{id}")
+    @PutMapping("product/{id}")
     public ResponseEntity<List<Story>> showProductStories(@PathVariable("id") Integer id){
         List<Story> stories = storyService.getStoriesByProductId(id);
         return ResponseEntity.ok(stories);
@@ -54,10 +64,17 @@ public class StoryController {
         return ResponseEntity.ok(stories);
     }
 
-    @PutMapping("deleteStory")
+    @GetMapping("deleteStory")
     public ResponseEntity<String> deleteStory(StoryUPK storyUPK) {
         storyService.deleteStory(storyUPK);
         return ResponseEntity.ok("Delete successfully!");
+    }
+
+    @GetMapping("searchStory")
+    public ResponseEntity<Page<Story>> searchStory(String input, Integer page, Integer size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Story> searchStoryPage = storyService.searchStory(input, pageRequest);
+        return ResponseEntity.ok(searchStoryPage);
     }
 
 

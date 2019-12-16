@@ -10,21 +10,35 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.sql.Date;
+import java.util.List;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-class StoryRepositoryTest {
+public class StoryRepositoryTest {
 
     @Autowired
     private StoryRepository storyRepository;
 
     @Test
-    public void findByNameContains() throws Exception {
-        PageRequest pageRequest = new PageRequest();
-        Page<Story> story = storyRepository.findByNameContains("1", pageRequest);
-        System.out.println(story.getTotalElements());
-        Assert.assertNotEquals(0, story.getTotalElements());
+    public void testFindByStoryNameContainingAndDescriptionContaining() throws Exception {
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        Page<Story> storyList = storyRepository.findByStoryNameContainingAndDescriptionContaining("次", "o", pageRequest);
+        System.out.println(storyList.getTotalElements());
+        Assert.assertNotEquals(0, pageRequest);
+    }
+
+    @Test
+    public void testFindByDescriptionContains() throws Exception {
+        List<Story> storyList = storyRepository.findByDescriptionContaining("o");
+        Assert.assertNotEquals(0, storyList.size());
+    }
+
+    @Test
+    public void testFindByNameContains() throws Exception {
+        List<Story> storyList = storyRepository.findByStoryNameContaining("次");
+        Assert.assertNotEquals(0, storyList.size());
     }
 
 }

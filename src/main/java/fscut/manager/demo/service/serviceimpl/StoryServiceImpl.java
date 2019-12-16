@@ -10,9 +10,12 @@ import fscut.manager.demo.entity.UPK.StoryUPK;
 import fscut.manager.demo.service.StoryService;
 import fscut.manager.demo.vo.StoryVO;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,17 +24,17 @@ import java.util.Optional;
 @Service
 public class StoryServiceImpl implements StoryService {
 
-    @Autowired
+    @Resource
     private StoryRepository storyRepository;
 
-    @Autowired
+    @Resource
     private CustomerRepository customerRepository;
 
-    @Autowired
+    @Resource
     private StoryEditionRepository storyEditionRepository;
 
     @Override
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     public Optional<Story> addStory(Story story) {
         StoryUPK storyUPK = getNewStoryUPK(story.getStoryUPK().getProductId());
         BeanUtils.copyProperties(storyUPK, story.getStoryUPK());
@@ -43,7 +46,7 @@ public class StoryServiceImpl implements StoryService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     public Optional<Story> editStory(Story story) {
 
         int edition = story.getStoryUPK().getEdition() + 1;
@@ -55,7 +58,6 @@ public class StoryServiceImpl implements StoryService {
         storyEditionRepository.updateEdition(storyEdition);
 
         return storyRepository.findById(story.getStoryUPK());
-
     }
 
     @Override
@@ -63,42 +65,44 @@ public class StoryServiceImpl implements StoryService {
         List<Story> storyList = getStoryHistory(storyUPK);
         StoryDetailDTO storyDetailDTO = new StoryDetailDTO();
         Optional<Story> story = storyRepository.findById(storyUPK);
-        storyDetailDTO.setStory(story.get());
+        if (story.isPresent()) {
+            storyDetailDTO.setStory(story.get());
+        }
 
-        for (int i = 0; i < storyList.size()-1; i++) {
-            Story tmp = getDifferenceBetween2Stories(storyList.get(i), storyList.get(i+1));
+        for (int i = 0; i < storyList.size() - 1; i++) {
+            Story tmp = getDifferenceBetween2Stories(storyList.get(i), storyList.get(i + 1));
             storyDetailDTO.getStoryList().add(tmp);
         }
         return storyDetailDTO;
     }
 
-    public Story getDifferenceBetween2Stories(Story story1, Story story2){
+    private Story getDifferenceBetween2Stories(Story story1, Story story2) {
         Story result = new Story();
-        if(!compareString(story1.getConclusion(), story2.getConclusion())) {
+        if (!compareString(story1.getConclusion(), story2.getConclusion())) {
             result.setConclusion(story1.getConclusion());
         }
-        if(!compareString(story1.getDescription(), story2.getDescription())) {
+        if (!compareString(story1.getDescription(), story2.getDescription())) {
             result.setDescription(story1.getDescription());
         }
-        if(!story1.getDesignId().equals(story2.getDesignId())) {
+        if (!story1.getDesignId().equals(story2.getDesignId())) {
             result.setDesignId(story1.getDesignId());
         }
-        if(!story1.getDevId().equals(story2.getDevId())) {
+        if (!story1.getDevId().equals(story2.getDevId())) {
             result.setDevId(story1.getDevId());
         }
-        if(!story1.getTestId().equals(story2.getTestId())) {
+        if (!story1.getTestId().equals(story2.getTestId())) {
             result.setTestId(story1.getTestId());
         }
-        if(!compareString(story1.getOrigin(), story2.getOrigin())) {
+        if (!compareString(story1.getOrigin(), story2.getOrigin())) {
             result.setOrigin(story1.getOrigin());
         }
-        if(!story1.getPutTime().equals(story2.getPutTime())) {
+        if (!story1.getPutTime().equals(story2.getPutTime())) {
             result.setPutTime(story1.getPutTime());
         }
-        if(!compareString(story1.getStoryName(), story2.getStoryName())) {
+        if (!compareString(story1.getStoryName(), story2.getStoryName())) {
             result.setStoryName(story1.getStoryName());
         }
-        if(!story1.getStoryStatus().equals(story2.getStoryStatus())) {
+        if (!story1.getStoryStatus().equals(story2.getStoryStatus())) {
             result.setStoryStatus(story1.getStoryStatus());
         }
         result.setEditId(story1.getEditId());
@@ -108,16 +112,16 @@ public class StoryServiceImpl implements StoryService {
 
     /**
      * 相同返回true
-     * @param str1
-     * @param str2
-     * @return
+     * @param str1 字符串1
+     * @param str2 字符串2
+     * @return true false
      */
-    boolean compareString(String str1, String str2){
-        return ((str1 == str2) || (str1 != null && str1.equals(str2)));
+    private boolean compareString(String str1, String str2) {
+        return str1 != null && str1.equals(str2);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     public void deleteStory(StoryUPK storyUPK) {
 
         storyRepository.deleteStories(storyUPK);
@@ -127,21 +131,18 @@ public class StoryServiceImpl implements StoryService {
 
     @Override
     public List<StoryUPK> getStoryEditionsByProductId(Integer productId) {
-
-        List<StoryUPK> storyUPKS = storyEditionRepository.findStoryEditionsByProductId(productId);
-        return storyUPKS;
+        return storyEditionRepository.findStoryEditionsByProductId(productId);
     }
 
     /**
-     * 获取一个产品的所有最新需求
-     * @param
-     * @return
+     * 获得一个产品的最新需求
+     * @param storyUPK 主键
+     * @return 需求列表
      */
     @Override
     public List<Story> getStoriesByEditions(List<StoryUPK> storyUPK) {
         List<Story> storyList = new ArrayList<>();
-        for (StoryUPK s : storyUPK
-                ) {
+        for (StoryUPK s : storyUPK) {
             storyList.add(storyRepository.findStoryByEdition(s));
         }
         return storyList;
@@ -154,8 +155,7 @@ public class StoryServiceImpl implements StoryService {
 
     @Override
     public List<Story> getStoryHistory(StoryUPK storyUPK) {
-        List<Story> stories = storyRepository.findStoriesByStoryUPK(storyUPK);
-        return stories;
+        return storyRepository.findStoriesByStoryUPK(storyUPK);
     }
 
 
@@ -184,4 +184,54 @@ public class StoryServiceImpl implements StoryService {
         story.setEditId(storyVO.getCustomerId());
         return story;
     }
+
+    /**
+     * 按需求名模糊搜索
+     * @param storyName 需求名称
+     * @return 需求列表
+     */
+    @Override
+    public List<Story> getStoryByStoryNameLike(String storyName) {
+        if (storyName == null) {
+            return new ArrayList<>();
+        }
+
+        return storyRepository.findByStoryNameContaining(storyName);
+    }
+
+    /**
+     * 按客户描述模糊搜索
+     * @param description 客户描述
+     * @return 需求列表
+     */
+    @Override
+    public List<Story> getStoryByDescriptionLike(String description) {
+        if (description == null) {
+            return new ArrayList<>();
+        }
+
+        return storyRepository.findByDescriptionContaining(description);
+    }
+
+    /**
+     * 根据用户输入进行模糊查询
+     * @param input 用户输入
+     * @param pageable 分页
+     * @return 需求
+     */
+    @Override
+    public Page<Story> searchStory(String input, Pageable pageable) {
+        List<Story> storyList = new ArrayList<>();
+        List<Story> storyNameContainingList = storyRepository.findByStoryNameContaining(input);
+        List<Story> storyDescriptionContainingList = storyRepository.findByDescriptionContaining(input);
+        if (!storyNameContainingList.isEmpty()) {
+            storyList.addAll(storyNameContainingList);
+        }
+        if (!storyDescriptionContainingList.isEmpty()) {
+            storyList.addAll(storyDescriptionContainingList);
+        }
+        return new PageImpl<>(storyList, pageable, storyList.size());
+    }
+
+
 }

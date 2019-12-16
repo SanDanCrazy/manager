@@ -9,7 +9,6 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
@@ -25,11 +24,11 @@ public class CustomerController {
 
     private Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
-    @Autowired
+    @Resource
     private UserService userService;
 
     @PostMapping(value = "/login")
-    public ResponseEntity<Void> login(@RequestBody UserDto loginInfo, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<Void> login(@RequestBody UserDto loginInfo, HttpServletResponse response) {
         Subject subject = SecurityUtils.getSubject();
         try {
             UsernamePasswordToken token = new UsernamePasswordToken(loginInfo.getUsername(), loginInfo.getPassword());
@@ -50,13 +49,13 @@ public class CustomerController {
 
     /**
      * 退出登录
-     * @return
+     *
      */
     @GetMapping(value = "/logout")
     public ResponseEntity<Void> logout() {
         Subject subject = SecurityUtils.getSubject();
-        if(subject.getPrincipals() != null) {
-            UserDto user = (UserDto)subject.getPrincipals().getPrimaryPrincipal();
+        if (subject.getPrincipals() != null) {
+            UserDto user = (UserDto) subject.getPrincipals().getPrimaryPrincipal();
             userService.deleteLoginInfo(user.getUsername());
         }
         SecurityUtils.getSubject().logout();

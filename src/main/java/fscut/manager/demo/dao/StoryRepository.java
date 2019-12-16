@@ -1,7 +1,6 @@
 package fscut.manager.demo.dao;
 
 import fscut.manager.demo.entity.Story;
-import fscut.manager.demo.entity.StoryEdition;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,9 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 
 @Repository
@@ -39,6 +36,30 @@ public interface StoryRepository extends JpaRepository<Story, StoryUPK> {
     @Query(value = "delete from story where product_id = :#{#storyUPK.productId} and story_id = :#{#storyUPK.storyId}", nativeQuery = true)
     void deleteStories(@Param("storyUPK") StoryUPK storyUPK);
 
-    Page<Story> findByNameContains(String name, Pageable pageable);
+
+    /**
+     * 根据需求名称模糊查询
+     * @param storyName 需求名称
+     * @return 需求列表
+     */
+    List<Story> findByStoryNameContaining(String storyName);
+
+    /**
+     * 根据客户描述模糊查询
+     * @param description 客户描述
+     * @return 需求列表
+     */
+    List<Story> findByDescriptionContaining(String description);
+
+    /**
+     * 根据需求名称和客户描述模糊查询
+     * @param storyName 需求名称
+     * @param description 客户描述
+     * @param pageable 分页
+     * @return 分页显示需求
+     */
+    Page<Story> findByStoryNameContainingAndDescriptionContaining(String storyName, String description, Pageable pageable);
+
+
 
 }
