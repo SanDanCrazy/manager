@@ -11,13 +11,10 @@ import java.io.Serializable;
 @Data
 public class StoryUPK implements Serializable{
 
-    @Column(name = "product_id")
     private Integer productId;
 
-    @Column(name = "story_id")
     private Integer storyId;
 
-    @Column(name = "edition")
     private Integer edition;
 
     public StoryUPK() {

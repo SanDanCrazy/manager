@@ -1,35 +1,37 @@
 package fscut.manager.demo.entity.UPK;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Embeddable
+@Data
 public class CustomerRoleUPK implements Serializable{
 
-    @Column(name = "customer_id")
     private Integer customerId;
 
-    @Column(name = "role_id")
     private Integer roleId;
 
-    public CustomerRoleUPK(){}
+    private Integer productId;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         CustomerRoleUPK that = (CustomerRoleUPK) o;
-
-        if (!customerId.equals(that.customerId)) return false;
-        return roleId.equals(that.roleId);
+        return Objects.equals(customerId, that.customerId) &&
+                Objects.equals(roleId, that.roleId) &&
+                Objects.equals(productId, that.productId);
     }
 
     @Override
     public int hashCode() {
-        int result = customerId.hashCode();
-        result = 31 * result + roleId.hashCode();
-        return result;
+        return Objects.hash(customerId, roleId, productId);
     }
+
+    public CustomerRoleUPK(){}
+
 }

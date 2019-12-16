@@ -8,7 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-
+@Aspect
+@Component
 public class TimeAspect {
 
     private final static Logger log = LoggerFactory.getLogger(TimeAspect.class);
@@ -24,14 +25,13 @@ public class TimeAspect {
         long begin = System.currentTimeMillis();
         try {
             result = joinPoint.proceed();
-
+            return result;
         } catch (Exception e) {
             log.error("日志记录发生错误，errorMessage:{}", e.getMessage());
         } finally {
             long costTime = System.currentTimeMillis() - begin;
             log.info(joinPoint.getSignature().getName() + " finished! Cost:" + costTime + " ms");
-
+            return result;
         }
-        return result;
     }
 }

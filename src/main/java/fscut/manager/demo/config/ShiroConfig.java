@@ -1,10 +1,10 @@
 package fscut.manager.demo.config;
 
-import fscut.manager.demo.filter.AnyRolesAuthorizationFilter;
+import fscut.manager.demo.filter.AnyRolesAuthFilter;
 import fscut.manager.demo.filter.JwtAuthFilter;
 import fscut.manager.demo.util.DbShiroRealm;
 import fscut.manager.demo.util.JWTShiroRealm;
-import fscut.manager.demo.service.serviceimpl.UserService;
+import fscut.manager.demo.service.serviceImpl.UserService;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
@@ -80,7 +80,7 @@ public class ShiroConfig {
         factoryBean.setSecurityManager(securityManager);
         Map<String, Filter> filterMap = factoryBean.getFilters();
         filterMap.put("authcToken", createAuthFilter(userService));
-        filterMap.put("anyRole", createRolesFilter());
+        filterMap.put("anyRole", createAnyRolesAuthFilter(userService));
         factoryBean.setFilters(filterMap);
         factoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition().getFilterChainMap());
 
@@ -94,10 +94,10 @@ public class ShiroConfig {
         chainDefinition.addPathDefinition("/login", "noSessionCreation,anon");
         chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken[permissive]");
         chainDefinition.addPathDefinition("/image/**", "anon");  
-        chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,authcToken,anyRole[admin,manager]"); //只允许admin或manager角色的用户访问
-        chainDefinition.addPathDefinition("/article/list", "noSessionCreation,authcToken");
-        chainDefinition.addPathDefinition("/article/*", "noSessionCreation,authcToken[permissive]");
-        chainDefinition.addPathDefinition("/**", "noSessionCreation,anon");
+        chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,authcToken,anyRole[admin]"); //只允许admin或manager角色的用户访问
+        chainDefinition.addPathDefinition("/Story", "noSessionCreation,authcToken,anyRole[partner]");
+        chainDefinition.addPathDefinition("/product/**", "noSessionCreation,authcToken");
+        chainDefinition.addPathDefinition("/**", "noSessionCreation");
         return chainDefinition;
     }
 
@@ -105,8 +105,8 @@ public class ShiroConfig {
         return new JwtAuthFilter(userService);
     }
 
-    protected AnyRolesAuthorizationFilter createRolesFilter(){
-        return new AnyRolesAuthorizationFilter();
+    protected AnyRolesAuthFilter createAnyRolesAuthFilter(UserService userService){
+        return new AnyRolesAuthFilter(userService);
     }
 
 }

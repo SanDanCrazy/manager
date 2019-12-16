@@ -17,6 +17,7 @@ public class UserDto implements Serializable {
     private String encryptPwd;
     private Integer userId;
     private String salt;
+    private List<Integer> productIds;
     private List<String> roles;
 
 }

@@ -1,4 +1,4 @@
-package fscut.manager.demo.service.serviceimpl;
+package fscut.manager.demo.service.serviceImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,7 +8,12 @@ import fscut.manager.demo.dao.CustomerRepository;
 import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Customer;
 import fscut.manager.demo.util.JwtUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.crypto.hash.Sha256Hash;
+import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -75,8 +80,11 @@ public class UserService {
     public UserDto getUserInfo(String userName) {
     	UserDto user = new UserDto();
     	Customer customer = customerRepository.findCustomerByUsername(userName);
+    	List<Integer> productIds = customerRepository.findProductIdsByCustomerId(customer.getId());
+    	user.setRoles(getUserRoles(customer.getId()));
     	user.setUserId(customer.getId());
     	user.setUsername(userName);
+    	user.setProductIds(productIds);
     	user.setEncryptPwd(new Sha256Hash(customer.getPassword(), encryptSalt).toHex());
     	return user;
     }
@@ -87,8 +95,39 @@ public class UserService {
      * @return
      */
     //todo
+    @Cacheable(value = "role")
+    public List<String> getUserRoles(Integer userId, List<Integer> productIds){
+        List<String> roles = customerRepository.findRolesByCustomerIdAndProductIds(userId, productIds);
+        for (String str: roles
+             ) {
+            System.out.println(str);
+        }
+        return roles;
+    }
+
     public List<String> getUserRoles(Integer userId){
-    	return Arrays.asList("admin");
+        List<String> roles = customerRepository.findRolesByCustomerId(userId);
+        for (String str: roles
+        ) {
+            System.out.println(str);
+        }
+        return roles;
+    }
+
+
+    public boolean isUserAllowed(Integer productId, Integer userId){
+        if(customerRepository.findProductIdsByCustomerId(userId).contains(productId)){
+            return true;
+        }
+        return false;
+    }
+
+    public Void userAllowed(Integer productId){
+        Subject subject = SecurityUtils.getSubject();
+        UserDto user = (UserDto) subject.getPrincipal();
+        if(!isUserAllowed(productId, user.getUserId()))
+            throw new UnauthorizedException();
+        return null;
     }
 
 }
