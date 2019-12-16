@@ -1,4 +1,4 @@
-package fscut.manager.demo.service.serviceImpl;
+package fscut.manager.demo.service.serviceimpl;
 
 import fscut.manager.demo.dao.ProductRepository;
 import fscut.manager.demo.entity.Product;
