@@ -11,25 +11,25 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/product")
+@RequestMapping("product")
 public class ProductController {
 
     @Resource
     private ProductService productService;
 
-    @GetMapping("/list")
+    @GetMapping("list")
     public ResponseEntity showProductList() {
         List<Product> products = productService.showProductList();
         return ResponseEntity.ok(products);
     }
 
-    @PostMapping("/create")
+    @PostMapping("create")
     public ResponseEntity create(String productName) {
         Product product = productService.save(productName);
         return ResponseEntity.ok(product);
     }
 
-    @GetMapping("/delete")
+    @GetMapping("delete")
     public ResponseEntity delete(Integer productId) {
         productService.deleteProduct(productId);
         return ResponseEntity.ok("delete successfully");

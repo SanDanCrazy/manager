@@ -112,7 +112,6 @@ public class UserService {
         return roles;
     }
 
-
     public boolean isUserAllowed(Integer productId, Integer userId){
         if(customerRepository.findProductIdsByCustomerId(userId).contains(productId)){
             return true;
@@ -120,6 +119,11 @@ public class UserService {
         return false;
     }
 
+    /**
+     * 根据token判断用户是否具有产品的权限
+     * @param productId 产品Id
+     * @return
+     */
     public Void userAllowed(Integer productId){
         Subject subject = SecurityUtils.getSubject();
         UserDto user = (UserDto) subject.getPrincipal();

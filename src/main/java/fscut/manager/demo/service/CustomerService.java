@@ -1,6 +1,7 @@
 package fscut.manager.demo.service;
 
 import fscut.manager.demo.entity.Customer;
+import fscut.manager.demo.entity.CustomerRole;
 import fscut.manager.demo.exception.CustomerAlreadyExitsException;
 import fscut.manager.demo.exception.CustomerNotExitsException;
 import fscut.manager.demo.vo.CustomerAuthVO;
@@ -20,5 +21,9 @@ public interface CustomerService {
     Customer addCustomer(Customer customer) throws CustomerAlreadyExitsException;
 
     void deleteCustomer(String username) throws CustomerNotExitsException;
+
+    void assignRole(CustomerRole customerRole);
+
+    void deleteRole(CustomerRole customerRole);
 
 }

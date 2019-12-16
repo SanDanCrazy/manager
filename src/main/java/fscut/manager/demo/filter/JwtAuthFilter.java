@@ -93,17 +93,21 @@ public class JwtAuthFilter extends AuthenticatingFilter {
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
         HttpServletResponse httpResponse = WebUtils.toHttp(response);
         String newToken = null;
+
         if(token instanceof JWTToken){
             JWTToken jwtToken = (JWTToken)token;
             UserDto user = (UserDto) subject.getPrincipal();
             boolean shouldRefresh = shouldTokenRefresh(JwtUtils.getIssuedAt(jwtToken.getToken()));
             if(shouldRefresh) {
                 newToken = userService.generateJwtToken(user.getUsername());
+            }else{
+                httpResponse.setHeader("token", jwtToken.getToken());
             }
-        }
-        if(StringUtils.isNotBlank(newToken))
-            httpResponse.setHeader("x-auth-token", newToken);
 
+        }
+        if(StringUtils.isNotBlank(newToken)) {
+            httpResponse.setHeader("token", newToken);
+        }
         return true;
     }
 
@@ -115,7 +119,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
 
     protected String getAuthzHeader(ServletRequest request) {
         HttpServletRequest httpRequest = WebUtils.toHttp(request);
-        String header = httpRequest.getHeader("x-auth-token");
+        String header = httpRequest.getHeader("token");
         return StringUtils.removeStart(header, "Bearer ");
     }
 

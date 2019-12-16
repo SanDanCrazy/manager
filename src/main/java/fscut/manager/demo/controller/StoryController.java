@@ -21,6 +21,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
+@RequestMapping("story")
 public class StoryController {
 
     @Autowired
@@ -90,7 +91,5 @@ public class StoryController {
         Page<Story> searchStoryPage = storyService.searchStory(input, pageRequest);
         return ResponseEntity.ok(searchStoryPage);
     }
-
-
 
 }

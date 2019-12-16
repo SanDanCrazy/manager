@@ -87,16 +87,16 @@ public class ShiroConfig {
         return factoryBean;
     }
 
-    //todo
+
     @Bean
     protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
         chainDefinition.addPathDefinition("/login", "noSessionCreation,anon");
         chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken[permissive]");
-        chainDefinition.addPathDefinition("/image/**", "anon");  
-        chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,authcToken,anyRole[admin]"); //只允许admin或manager角色的用户访问
-        chainDefinition.addPathDefinition("/Story", "noSessionCreation,authcToken,anyRole[partner]");
-        chainDefinition.addPathDefinition("/product/**", "noSessionCreation,authcToken");
+        chainDefinition.addPathDefinition("/image/**", "anon");
+        chainDefinition.addPathDefinition("/customer/**", "noSessionCreation,authcToken,anyRole[admin,manager]"); //只允许admin或manager角色的用户访问
+        chainDefinition.addPathDefinition("/story/**", "noSessionCreation,authcToken,anyRole[partner,manager]");
+        chainDefinition.addPathDefinition("/product/**", "noSessionCreation,authcToken,anyRole[manager,admin]");
         chainDefinition.addPathDefinition("/**", "noSessionCreation");
         return chainDefinition;
     }

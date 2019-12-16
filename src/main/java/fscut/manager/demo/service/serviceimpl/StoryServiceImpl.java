@@ -87,13 +87,13 @@ public class StoryServiceImpl implements StoryService {
         if (!compareString(story1.getDescription(), story2.getDescription())) {
             result.setDescription(story1.getDescription());
         }
-        if (!story1.getDesignId().equals(story2.getDesignId())) {
+        if (!compareInteger(story1.getDesignId(),story2.getDesignId())) {
             result.setDesignId(story1.getDesignId());
         }
-        if (!story1.getDevId().equals(story2.getDevId())) {
+        if (!compareInteger(story1.getDevId(), story2.getDevId())) {
             result.setDevId(story1.getDevId());
         }
-        if (!story1.getTestId().equals(story2.getTestId())) {
+        if (!compareInteger(story1.getTestId(),story2.getTestId())) {
             result.setTestId(story1.getTestId());
         }
         if (!compareString(story1.getOrigin(), story2.getOrigin())) {
@@ -120,7 +120,15 @@ public class StoryServiceImpl implements StoryService {
      * @return true false
      */
     private boolean compareString(String str1, String str2) {
+        if(str1 == null && str2 == null)
+            return true;
         return str1 != null && str1.equals(str2);
+    }
+
+    private boolean compareInteger(Integer integer1, Integer integer2){
+        if(integer1 == null && integer2 == null)
+            return true;
+        return integer1 != null && integer1.equals(integer2);
     }
 
     @Override

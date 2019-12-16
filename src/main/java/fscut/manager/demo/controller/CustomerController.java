@@ -1,65 +1,85 @@
 package fscut.manager.demo.controller;
 
-
-import fscut.manager.demo.dto.UserDto;
-import fscut.manager.demo.service.serviceimpl.UserService;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import com.fasterxml.jackson.annotation.JsonView;
+import fscut.manager.demo.entity.Customer;
+import fscut.manager.demo.entity.CustomerRole;
+import fscut.manager.demo.exception.CustomerAlreadyExitsException;
+import fscut.manager.demo.exception.CustomerNotExitsException;
+import fscut.manager.demo.service.CustomerService;
+import fscut.manager.demo.vo.CustomerAuthVO;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @RestController
+@RequestMapping("customer")
 public class CustomerController {
 
-    private Logger logger = LoggerFactory.getLogger(CustomerController.class);
+    @Autowired
+    private CustomerService customerService;
 
-    @Resource
-    private UserService userService;
-
-    @PostMapping(value = "/login")
-    public ResponseEntity<Void> login(@RequestBody UserDto loginInfo, HttpServletResponse response) {
-        Subject subject = SecurityUtils.getSubject();
-        try {
-            UsernamePasswordToken token = new UsernamePasswordToken(loginInfo.getUsername(), loginInfo.getPassword());
-            subject.login(token);
-
-            UserDto user = (UserDto) subject.getPrincipal();
-            String newToken = userService.generateJwtToken(user.getUsername());
-            response.setHeader("x-auth-token", newToken);
-
-            return ResponseEntity.ok().build();
-        } catch (AuthenticationException e) {
-            logger.error("User {} login fail, Reason:{}", loginInfo.getUsername(), e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    @PostMapping("addCustomer")
+    @RequiresRoles("admin")
+    public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer) throws CustomerAlreadyExitsException {
+        Customer result = customerService.addCustomer(customer);
+        return ResponseEntity.ok(result);
     }
 
-    /**
-     * 退出登录
-     *
-     */
-    @GetMapping(value = "/logout")
-    public ResponseEntity<Void> logout() {
-        Subject subject = SecurityUtils.getSubject();
-        if (subject.getPrincipals() != null) {
-            UserDto user = (UserDto) subject.getPrincipals().getPrimaryPrincipal();
-            userService.deleteLoginInfo(user.getUsername());
-        }
-        SecurityUtils.getSubject().logout();
-        return ResponseEntity.ok().build();
+    @DeleteMapping("deleteCustomer")
+    @RequiresRoles("admin")
+    public ResponseEntity<Void> deleteCustomer(String username) throws CustomerNotExitsException {
+        customerService.deleteCustomer(username);
+        return ResponseEntity.ok(null);
     }
+
+    @JsonView({Customer.SimpleView.class})
+    @GetMapping("customerList")
+    @RequiresRoles({"admin","manager"})
+    public ResponseEntity<List<Customer>> getCustomerList(){
+        List<Customer> customerList = customerService.getCustomerList();
+        return ResponseEntity.ok(customerList);
+    }
+
+    @JsonView({Customer.SimpleView.class})
+    @GetMapping("customerList/{id}")
+    @RequiresRoles({"admin","manager"})
+    public ResponseEntity<List<Customer>> getCustomerListByProductId(@PathVariable("id") Integer productId){
+        List<Customer> customerList = customerService.getCustomerListByProductId(productId);
+        return ResponseEntity.ok(customerList);
+    }
+
+
+    @RequiresRoles("admin")
+    @PostMapping("assignRole")
+    public ResponseEntity<Void> assignRole(@RequestBody CustomerRole customerRole){
+        customerService.assignRole(customerRole);
+        return ResponseEntity.ok(null);
+    }
+
+    @DeleteMapping("deleteRole")
+    @RequiresRoles("admin")
+    public ResponseEntity<Void> deleteRole(@RequestBody CustomerRole customerRole){
+        customerService.deleteRole(customerRole);
+        return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("addToProduct")
+    @RequiresRoles("manager")
+    public ResponseEntity<String> addToProduct(@RequestBody CustomerAuthVO customerAuthVO){
+        customerService.addToProduct(customerAuthVO);
+        return ResponseEntity.ok("ok");
+    }
+
+    @DeleteMapping("deleteFromProduct")
+    @RequiresRoles("manager")
+    public ResponseEntity<Void> deleteFromProduct(Integer customerId, Integer productId){
+        customerService.deleteFromProduct(customerId,productId);
+        return ResponseEntity.ok(null);
+    }
+
+
 
 }

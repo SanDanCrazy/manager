@@ -67,4 +67,14 @@ public class CustomerServiceImpl implements CustomerService {
         customerRoleRepository.deleteRoleByCustomerId(customerId);
     }
 
+    @Override
+    public void assignRole(CustomerRole customerRole){
+        customerRoleRepository.save(customerRole);
+    }
+
+    @Override
+    public void deleteRole(CustomerRole customerRole){
+        customerRoleRepository.delete(customerRole);
+    }
+
 }
