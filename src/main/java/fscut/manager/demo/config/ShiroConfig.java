@@ -4,7 +4,7 @@ import fscut.manager.demo.filter.AnyRolesAuthFilter;
 import fscut.manager.demo.filter.JwtAuthFilter;
 import fscut.manager.demo.util.DbShiroRealm;
 import fscut.manager.demo.util.JWTShiroRealm;
-import fscut.manager.demo.service.serviceImpl.UserService;
+import fscut.manager.demo.service.serviceimpl.UserService;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;

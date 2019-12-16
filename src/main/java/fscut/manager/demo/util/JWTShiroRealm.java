@@ -1,7 +1,7 @@
 package fscut.manager.demo.util;
 
 import fscut.manager.demo.dto.UserDto;
-import fscut.manager.demo.service.serviceImpl.UserService;
+import fscut.manager.demo.service.serviceimpl.UserService;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
