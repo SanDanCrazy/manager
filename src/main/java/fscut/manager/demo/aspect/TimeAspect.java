@@ -21,17 +21,10 @@ public class TimeAspect {
     @Around("performance()")
     public Object doLog(ProceedingJoinPoint joinPoint) throws Throwable {
         log.info(joinPoint.getSignature().getName() + " started!");
-        Object result = new Object();
         long begin = System.currentTimeMillis();
-        try {
-            result = joinPoint.proceed();
-            return result;
-        } catch (Exception e) {
-            log.error("日志记录发生错误，errorMessage:{}", e.getMessage());
-        } finally {
-            long costTime = System.currentTimeMillis() - begin;
-            log.info(joinPoint.getSignature().getName() + " finished! Cost:" + costTime + " ms");
-            return result;
-        }
+        Object result = joinPoint.proceed();
+        long costTime = System.currentTimeMillis() - begin;
+        log.info(joinPoint.getSignature().getName() + " finished! Cost:" + costTime + " ms");
+        return result;
     }
 }
