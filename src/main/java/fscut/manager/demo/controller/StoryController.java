@@ -7,6 +7,7 @@ import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import fscut.manager.demo.service.StoryService;
+import fscut.manager.demo.service.serviceImpl.UserService;
 import fscut.manager.demo.vo.StoryVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
