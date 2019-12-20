@@ -4,6 +4,7 @@ import fscut.manager.demo.dto.StoryDetailDTO;
 import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.UPK.StoryUPK;
+import fscut.manager.demo.service.MessageService;
 import fscut.manager.demo.service.StoryService;
 import fscut.manager.demo.service.serviceimpl.UserService;
 import fscut.manager.demo.vo.StoryVO;
@@ -30,6 +31,9 @@ public class StoryController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private MessageService messageService;
+
     @PostMapping("newStory")
     public ResponseEntity<Story> newStory(@RequestBody StoryVO storyVO){
         userService.userAllowed(storyVO.getStoryUPK().getProductId());
@@ -37,6 +41,8 @@ public class StoryController {
         Story story = storyService.convertStoryVO2Story(storyVO);
 
         Optional<Story> optional = storyService.addStory(story);
+        messageService.addMessage(optional.get(),"新建");
+
         return ResponseEntity.ok(optional.get());
     }
 

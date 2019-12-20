@@ -1,6 +1,8 @@
 package fscut.manager.demo.controller;
 
 import fscut.manager.demo.dto.UserDto;
+import fscut.manager.demo.entity.Product;
+import fscut.manager.demo.service.ProductService;
 import fscut.manager.demo.service.serviceimpl.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -9,6 +11,7 @@ import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @RestController
 public class LoginController {
@@ -25,6 +29,13 @@ public class LoginController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ProductService productService;
+
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @PostMapping(value = "/login")
     public ResponseEntity<Void> login(@RequestBody UserDto loginInfo, HttpServletResponse response) {
@@ -48,7 +59,6 @@ public class LoginController {
 
     /**
      * 退出登录
-     *
      */
     @GetMapping(value = "/logout")
     public ResponseEntity<Void> logout() {
@@ -60,4 +70,13 @@ public class LoginController {
         SecurityUtils.getSubject().logout();
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("list")
+    public ResponseEntity showProductList() {
+        List<Product> products = productService.showProductList();
+        return ResponseEntity.ok(products);
+    }
+
+
+
 }

@@ -1,4 +1,4 @@
-package fscut.manager.demo.util;
+package fscut.manager.demo.util.token;
 
 import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.service.serviceimpl.UserService;

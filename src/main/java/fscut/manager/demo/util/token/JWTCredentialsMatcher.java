@@ -1,4 +1,4 @@
-package fscut.manager.demo.util;
+package fscut.manager.demo.util.token;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

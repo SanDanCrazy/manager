@@ -17,12 +17,6 @@ public class ProductController {
     @Resource
     private ProductService productService;
 
-    @GetMapping("list")
-    public ResponseEntity showProductList() {
-        List<Product> products = productService.showProductList();
-        return ResponseEntity.ok(products);
-    }
-
     @PostMapping("create")
     public ResponseEntity create(String productName) {
         Product product = productService.save(productName);

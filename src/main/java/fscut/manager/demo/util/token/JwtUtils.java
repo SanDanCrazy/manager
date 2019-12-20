@@ -1,4 +1,4 @@
-package fscut.manager.demo.util;
+package fscut.manager.demo.util.token;
 
 
 

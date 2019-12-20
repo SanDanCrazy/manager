@@ -1,5 +1,6 @@
 package fscut.manager.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -25,6 +26,7 @@ public class Story {
     @Column(name = "origin")
     private String origin;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "put_time", nullable = false)
     private Date putTime;
 
@@ -49,12 +51,14 @@ public class Story {
     @Column(name = "test_id")
     private Integer testId;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "test_time")
     private Date testTime;
 
     @Column(name = "edit_id", nullable = false)
     private Integer editId;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "update_time", nullable = false)
     private java.util.Date updateTime;
 

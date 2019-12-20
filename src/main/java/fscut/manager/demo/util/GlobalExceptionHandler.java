@@ -20,11 +20,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = CustomerAlreadyExitsException.class)
     public ResponseEntity<String> customerAlreadyExitsHandler(CustomerAlreadyExitsException e) throws IOException{
-        return ResponseEntity.status(412).body(e.getMessage());
+        return ResponseEntity.status(403).body(e.getMessage());
     }
 
     @ExceptionHandler(value = CustomerNotExitsException.class)
     public ResponseEntity<String> customerNotExitsHandler(CustomerNotExitsException e) throws IOException{
-        return ResponseEntity.status(412).body(e.getMessage());
+        return ResponseEntity.status(403).body(e.getMessage());
     }
 }

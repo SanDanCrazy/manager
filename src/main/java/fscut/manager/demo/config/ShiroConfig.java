@@ -2,8 +2,8 @@ package fscut.manager.demo.config;
 
 import fscut.manager.demo.filter.AnyRolesAuthFilter;
 import fscut.manager.demo.filter.JwtAuthFilter;
-import fscut.manager.demo.util.DbShiroRealm;
-import fscut.manager.demo.util.JWTShiroRealm;
+import fscut.manager.demo.util.token.DbShiroRealm;
+import fscut.manager.demo.util.token.JWTShiroRealm;
 import fscut.manager.demo.service.serviceimpl.UserService;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
@@ -11,10 +11,13 @@ import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SessionStorageEvaluator;
 import org.apache.shiro.realm.Realm;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.apache.shiro.web.mgt.DefaultWebSessionStorageEvaluator;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,6 +62,25 @@ public class ShiroConfig {
         return sessionStorageEvaluator;
     }
 
+    @Bean
+    public static LifecycleBeanPostProcessor getLifecycleBeanPostProcessor(){
+        return new LifecycleBeanPostProcessor();
+    }
+
+    @Bean
+    public static DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator(){
+        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+        defaultAdvisorAutoProxyCreator.setProxyTargetClass(true); //important
+        return defaultAdvisorAutoProxyCreator;
+    }
+
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager){
+        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
+        return authorizationAttributeSourceAdvisor;
+    }
+
     @Bean("dbRealm")
     public Realm dbShiroRealm(UserService userService) {
         DbShiroRealm myShiroRealm = new DbShiroRealm(userService);
@@ -93,10 +115,10 @@ public class ShiroConfig {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
         chainDefinition.addPathDefinition("/login", "noSessionCreation,anon");
         chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken[permissive]");
-        chainDefinition.addPathDefinition("/image/**", "anon");
-        chainDefinition.addPathDefinition("/customer/**", "noSessionCreation,authcToken,anyRole[admin,manager]"); //只允许admin或manager角色的用户访问
-        chainDefinition.addPathDefinition("/story/**", "noSessionCreation,authcToken,anyRole[partner,manager]");
+        chainDefinition.addPathDefinition("/customer/**", "noSessionCreation,authcToken,anyRole[manager,admin]"); //只允许admin或manager角色的用户访问
+        chainDefinition.addPathDefinition("/story/**", "noSessionCreation,authcToken,anyRole[partner,manager,admin]");
         chainDefinition.addPathDefinition("/product/**", "noSessionCreation,authcToken,anyRole[manager,admin]");
+        chainDefinition.addPathDefinition("/message/**", "noSessionCreation,authcToken,anyRole[manager,partner,admin]");
         chainDefinition.addPathDefinition("/**", "noSessionCreation");
         return chainDefinition;
     }

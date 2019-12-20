@@ -1,4 +1,4 @@
-package fscut.manager.demo.util;
+package fscut.manager.demo.util.token;
 
 import java.util.List;
 
@@ -63,8 +63,7 @@ public class DbShiroRealm extends AuthorizingRealm {
             roles = userService.getUserRoles(user.getUserId());
             user.setRoles(roles);
         }
-        if (roles != null)
-            simpleAuthorizationInfo.addRoles(roles);
+        simpleAuthorizationInfo.addRoles(roles);
 
         return simpleAuthorizationInfo;
 	}
