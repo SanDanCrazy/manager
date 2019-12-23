@@ -1,5 +1,6 @@
 package fscut.manager.demo.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import lombok.Data;
 

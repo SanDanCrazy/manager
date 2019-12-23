@@ -26,4 +26,10 @@ public interface CustomerService {
 
     void deleteRole(CustomerRole customerRole);
 
+    String getUsernameById(Integer userId);
+
+    String getRealnameById(Integer userId);
+
+    Integer getIdByUsername(String username);
+
 }

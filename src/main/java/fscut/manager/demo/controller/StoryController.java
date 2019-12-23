@@ -4,9 +4,12 @@ import fscut.manager.demo.dto.StoryDetailDTO;
 import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.UPK.StoryUPK;
+import fscut.manager.demo.service.CustomerService;
 import fscut.manager.demo.service.MessageService;
 import fscut.manager.demo.service.StoryService;
 import fscut.manager.demo.service.serviceimpl.UserService;
+import fscut.manager.demo.util.CsvUtils;
+import fscut.manager.demo.util.websocket.WebSocketServer;
 import fscut.manager.demo.vo.StoryVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +37,9 @@ public class StoryController {
     private UserService userService;
 
     @Autowired
+    private CustomerService customerService;
+
+    @Autowired
     private MessageService messageService;
 
     @PostMapping("newStory")
@@ -43,6 +51,13 @@ public class StoryController {
         Optional<Story> optional = storyService.addStory(story);
         messageService.addMessage(optional.get(),"新建");
 
+
+        try{
+            WebSocketServer.sendInfo(messageService.getUnreadMessageNum(optional.get().getDesignId()),
+                    customerService.getUsernameById(optional.get().getDesignId()));
+        }catch (Exception e){
+            return null;
+        }
         return ResponseEntity.ok(optional.get());
     }
 
@@ -97,5 +112,13 @@ public class StoryController {
         Page<Story> searchStoryPage = storyService.searchStory(input, pageRequest);
         return ResponseEntity.ok(searchStoryPage);
     }
+
+    @GetMapping("download")
+    public void download(HttpServletResponse response) throws IOException{
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition","attachment;file=writeCSV.csv");
+        CsvUtils.download(storyService.getStoriesByProductId(1,1));
+    }
+
 
 }

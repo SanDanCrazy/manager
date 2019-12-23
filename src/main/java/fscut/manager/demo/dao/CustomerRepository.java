@@ -43,4 +43,7 @@ public interface CustomerRepository extends JpaRepository<Customer,Integer>{
     @Query(value = "select realname from customer where id = ?1", nativeQuery = true)
     String findRealNameByCustomerId(Integer id);
 
+    @Query(value = "select username from customer where id = ?1", nativeQuery = true)
+    String getUsernameById(Integer userId);
+
 }

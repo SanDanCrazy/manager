@@ -2,6 +2,7 @@ package fscut.manager.demo.controller;
 
 import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Product;
+import fscut.manager.demo.service.MessageService;
 import fscut.manager.demo.service.ProductService;
 import fscut.manager.demo.service.serviceimpl.UserService;
 import org.apache.shiro.SecurityUtils;
@@ -34,9 +35,6 @@ public class LoginController {
     private ProductService productService;
 
 
-    @Autowired
-    private RedisTemplate redisTemplate;
-
     @PostMapping(value = "/login")
     public ResponseEntity<Void> login(@RequestBody UserDto loginInfo, HttpServletResponse response) {
         Subject subject = SecurityUtils.getSubject();
@@ -47,6 +45,7 @@ public class LoginController {
             UserDto user = (UserDto) subject.getPrincipal();
             String newToken = userService.generateJwtToken(user.getUsername());
             response.setHeader("token", newToken);
+
 
             return ResponseEntity.ok().build();
         } catch (AuthenticationException e) {

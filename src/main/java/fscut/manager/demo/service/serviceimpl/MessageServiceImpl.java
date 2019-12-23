@@ -47,6 +47,13 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public List<Message> getMessage(String username){
+        List<Integer> messageIds = messageRepository.getMessageId(username);
+        List<Message> messageList = messageRepository.findMessagesByMessageIdIn(messageIds);
+        return messageList;
+    }
+
+    @Override
     public void readMessage(Integer messageId, Integer customerId) {
         messageRepository.readMessage(messageId, customerId);
     }
@@ -57,7 +64,13 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public Integer getUnreadMessageNum(String username) {
+        return messageRepository.getUnreadMessageNum(username);
+    }
+
+    @Override
     public void deleteMessage(Integer messageId, Integer customerId) {
         messageRepository.deleteCustomerMessage(messageId, customerId);
     }
+
 }

@@ -77,4 +77,24 @@ public class CustomerServiceImpl implements CustomerService {
         customerRoleRepository.delete(customerRole);
     }
 
+    @Override
+    public String getUsernameById(Integer userId) {
+        if(userId == null){
+            return null;
+        }
+        return customerRepository.getUsernameById(userId);
+    }
+
+    @Override
+    public String getRealnameById(Integer userId) {
+        if(userId == null){
+            return null;
+        }
+        return customerRepository.findRealNameByCustomerId(userId);
+    }
+
+    @Override
+    public Integer getIdByUsername(String username) {
+        return customerRepository.getIdByUsername(username);
+    }
 }

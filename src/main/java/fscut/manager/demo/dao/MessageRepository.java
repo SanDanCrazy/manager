@@ -22,6 +22,9 @@ public interface MessageRepository extends JpaRepository<Message,Integer> {
     @Query(value = "select distinct message_id from customer_message where customer_id = ?1",nativeQuery = true)
     List<Integer> getMessageId(@Param("customer_id") Integer customer_id);
 
+    @Query(value = "select distinct message_id from customer_message as cm left join customer as c on cm.customer_id = c.id where c.username = ?1",nativeQuery = true)
+    List<Integer> getMessageId(@Param("username") String username);
+
     List<Message> findMessagesByMessageIdIn(List<Integer> messageId);
 
     @Modifying
@@ -29,13 +32,17 @@ public interface MessageRepository extends JpaRepository<Message,Integer> {
     @Query(value = "update customer_message set checked = 1 where message_id = ?1 and customer_id = ?2", nativeQuery = true)
     void readMessage(Integer message_id, Integer customer_id);
 
-    @Query(value = "select count() from  customer_message where customer_id = ?1 and checked = 0", nativeQuery = true)
+    @Query(value = "select count(*) from  customer_message where customer_id = ?1 and checked = 0", nativeQuery = true)
     Integer getUnreadMessageNum(Integer customer_id);
+
+    @Query(value = "select count(*) from  customer_message as cm left join  customer as c on cm.customer_id = c.id where c.username = ?1 and cm.checked = 0", nativeQuery = true)
+    Integer getUnreadMessageNum(String username);
 
     @Modifying
     @Transactional
     @Query(value = "delete from customer_message where message_id = ?1 and customer_id = ?2", nativeQuery = true)
     void deleteCustomerMessage(Integer message_id, Integer customer_id);
+
 
 
 

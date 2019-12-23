@@ -3,6 +3,7 @@ package fscut.manager.demo.service;
 import fscut.manager.demo.dto.StoryDetailDTO;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.UPK.StoryUPK;
+import fscut.manager.demo.vo.StoryCsvVO;
 import fscut.manager.demo.vo.StoryVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,7 @@ public interface StoryService {
     List<Story> getStoriesByProductId(Integer productId, Integer customerId);
 
     Story convertStoryVO2Story(StoryVO storyVO);
+
 
     /**
      * 需求名称模糊查询

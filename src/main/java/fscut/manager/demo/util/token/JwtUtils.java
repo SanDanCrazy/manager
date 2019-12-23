@@ -39,6 +39,15 @@ public class JwtUtils {
         }
     }
 
+    public static Integer getUserId(String token){
+        try{
+            DecodedJWT jwt = JWT.decode(token);
+            return jwt.getClaim("userId").asInt();
+        }catch (JWTDecodeException e){
+            return null;
+        }
+    }
+
     /**
      * 生成签名,expireTime后过期
      * @param username 用户名
