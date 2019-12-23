@@ -51,16 +51,19 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer addCustomer(Customer customer) throws CustomerAlreadyExitsException{
         customer.setProductId(0);
-        if(customerRepository.findCustomerByUsername(customer.getUsername()) != null)
+        if(customerRepository.findCustomerByUsername(customer.getUsername()) != null) {
             throw new CustomerAlreadyExitsException("customer exits");
+        }
+
         return customerRepository.save(customer);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     public void deleteCustomer(String username) throws CustomerNotExitsException{
-        if(customerRepository.findCustomerByUsername(username) == null)
+        if(customerRepository.findCustomerByUsername(username) == null) {
             throw new CustomerNotExitsException("customer not exits");
+        }
 
         Integer customerId = customerRepository.getIdByUsername(username);
         customerRepository.deleteCustomerByUsername(username);
@@ -97,4 +100,9 @@ public class CustomerServiceImpl implements CustomerService {
     public Integer getIdByUsername(String username) {
         return customerRepository.getIdByUsername(username);
     }
+    @Override
+    public List getCustomers() {
+        return customerRepository.findIdAndRealName();
+    }
+
 }

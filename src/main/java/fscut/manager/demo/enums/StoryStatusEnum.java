@@ -5,8 +5,9 @@ import lombok.Getter;
 @Getter
 public enum  StoryStatusEnum implements CodeEnum {
     NEW(0, "新需求"),
-    FINISHED(1, "完成"),
-    CANCEL(2, "已取消")
+    PROCESSING(1, "处理中"),
+    FINISHED(2, "已完成"),
+    CANCEL(3, "已取消")
     ;
 
     private Integer code;

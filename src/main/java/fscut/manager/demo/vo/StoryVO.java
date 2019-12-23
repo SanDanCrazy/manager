@@ -1,6 +1,6 @@
 package fscut.manager.demo.vo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import lombok.Data;
 
@@ -11,7 +11,7 @@ public class StoryVO {
 
     private StoryUPK storyUPK;
 
-    private Integer origin;
+    private String origin;
 
     private Date putTime;
 
@@ -29,8 +29,10 @@ public class StoryVO {
 
     private Integer testId;
 
-    private Date testTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private java.util.Date testTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private java.util.Date updateTime;
 
 }

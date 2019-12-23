@@ -16,9 +16,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -120,15 +122,11 @@ public class StoryServiceImpl implements StoryService {
      * @return true false
      */
     private boolean compareString(String str1, String str2) {
-        if(str1 == null && str2 == null)
-            return true;
-        return str1 != null && str1.equals(str2);
+        return str1 == null && str2 == null || str1 != null && str1.equals(str2);
     }
 
-    private boolean compareInteger(Integer integer1, Integer integer2){
-        if(integer1 == null && integer2 == null)
-            return true;
-        return integer1 != null && integer1.equals(integer2);
+    private boolean compareInteger(Integer integer1, Integer integer2) {
+        return integer1 == null && integer2 == null || integer1 != null && integer1.equals(integer2);
     }
 
     @Override
@@ -146,7 +144,7 @@ public class StoryServiceImpl implements StoryService {
     }
 
     /**
-     * 获得一个产品的最新需求
+     * 获得一个产品的最新版本的需求
      * @param storyUPK 主键
      * @return 需求列表
      */
@@ -160,9 +158,15 @@ public class StoryServiceImpl implements StoryService {
     }
 
     @Override
-    public List<Story> getStoriesByProductId(Integer productId, Integer customerId) {
+    public Page<Story> getStoriesByProductId(Integer productId, Integer customerId, Pageable pageable) {
         if(customerRepository.findProductIdsByCustomerId(customerId).contains(productId)){
-            return getStoriesByEditions(getStoryEditionsByProductId(productId));
+            List<Story> storyList = getStoriesByEditions(getStoryEditionsByProductId(productId));
+            // 当前页第一条数据在List中的位置
+            int start = (int) pageable.getOffset();
+            // 当前页最后一条数据在List中的位置
+            int end = (start + pageable.getPageSize()) > storyList.size() ? storyList.size() : ( start + pageable.getPageSize());
+            // 配置分页数据
+            return new PageImpl<>(storyList.subList(start, end), pageable, storyList.size());
         }
         else{
             return null;
@@ -249,5 +253,49 @@ public class StoryServiceImpl implements StoryService {
         return new PageImpl<>(storyList, pageable, storyList.size());
     }
 
+    @Override
+    public Page<Story> selectStory(Integer productId, String startTime, String endTime, String origin, String input, Pageable pageable) {
+        List<StoryUPK> storyUPKList = getStoryEditionsByProductId(productId);
+        List<Story> storyList = new ArrayList<>();
+        Story story;
+        for (StoryUPK storyUPK : storyUPKList) {
+            story = selectStory(storyUPK, startTime, endTime, origin, input);
+            if (story != null) {
+                storyList.add(story);
+            }
+        }
+        int fromIndex = pageable.getPageSize() * pageable.getPageNumber();
+        int toIndex = pageable.getPageSize() * (pageable.getPageNumber() + 1);
+        int totalElements = storyList.size();
+        if(toIndex>totalElements) {
+            toIndex = totalElements;
+        }
+        List<Story> indexObjects = storyList.subList(fromIndex,toIndex);
+        return new PageImpl<>(indexObjects, pageable, totalElements);
+    }
+
+    private Story selectStory(StoryUPK storyUPK, String startTime, String endTime, String origin, String input) {
+        Specification<Story> predicate = (root, criteriaQuery, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (startTime != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("putTime").as(String.class), startTime));
+            }
+            if (endTime != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("putTime").as(String.class), endTime));
+            }
+            if (origin != null) {
+                predicates.add(criteriaBuilder.equal(root.get("origin").as(String.class), origin));
+            }
+            if (input != null) {
+                Predicate p1 = criteriaBuilder.like(root.get("storyName").as(String.class), "%" + input + "%");
+                Predicate p2 = criteriaBuilder.like(root.get("description").as(String.class), "%" + input + "%");
+                predicates.add(criteriaBuilder.or(p1, p2));
+            }
+            predicates.add(criteriaBuilder.equal(root.get("storyUPK").as(StoryUPK.class), storyUPK));
+            Predicate[] pre = new Predicate[predicates.size()];
+            return criteriaQuery.where(predicates.toArray(pre)).getRestriction();
+        };
+        return storyRepository.findOne(predicate);
+    }
 
 }

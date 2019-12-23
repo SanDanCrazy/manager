@@ -2,7 +2,6 @@ package fscut.manager.demo.controller;
 
 import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Product;
-import fscut.manager.demo.service.MessageService;
 import fscut.manager.demo.service.ProductService;
 import fscut.manager.demo.service.serviceimpl.UserService;
 import org.apache.shiro.SecurityUtils;
@@ -31,9 +30,13 @@ public class LoginController {
     @Autowired
     private UserService userService;
 
+
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Autowired
     private ProductService productService;
-
 
     @PostMapping(value = "/login")
     public ResponseEntity<Void> login(@RequestBody UserDto loginInfo, HttpServletResponse response) {
@@ -75,7 +78,4 @@ public class LoginController {
         List<Product> products = productService.showProductList();
         return ResponseEntity.ok(products);
     }
-
-
-
 }

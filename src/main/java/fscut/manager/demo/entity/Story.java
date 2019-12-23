@@ -6,11 +6,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import fscut.manager.demo.enums.StoryStatusEnum;
-import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Table(name = "story")
@@ -26,9 +25,9 @@ public class Story {
     @Column(name = "origin")
     private String origin;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @Column(name = "put_time", nullable = false)
-    private Date putTime;
+    private java.sql.Date putTime;
 
     @Column(name = "story_name", nullable = false)
     private String storyName;
@@ -51,16 +50,16 @@ public class Story {
     @Column(name = "test_id")
     private Integer testId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "test_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date testTime;
 
     @Column(name = "edit_id", nullable = false)
     private Integer editId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "update_time", nullable = false)
-    private java.util.Date updateTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
 
     public Story() {
     }
@@ -82,12 +81,12 @@ public class Story {
         this.origin = origin;
     }
 
-    public Date getPutTime() {
+    public java.sql.Date getPutTime() {
         return putTime;
     }
 
     @JsonView({Story.StoryListSimpleView.class})
-    public void setPutTime(Date putTime) {
+    public void setPutTime(java.sql.Date putTime) {
         this.putTime = putTime;
     }
 
@@ -171,5 +170,24 @@ public class Story {
 
     public void setUpdateTime(java.util.Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Story{" +
+                "storyUPK=" + storyUPK +
+                ", origin='" + origin + '\'' +
+                ", putTime=" + putTime +
+                ", storyName='" + storyName + '\'' +
+                ", storyStatus=" + storyStatus +
+                ", description='" + description + '\'' +
+                ", conclusion='" + conclusion + '\'' +
+                ", designId=" + designId +
+                ", devId=" + devId +
+                ", testId=" + testId +
+                ", testTime=" + testTime +
+                ", editId=" + editId +
+                ", updateTime=" + updateTime +
+                '}';
     }
 }

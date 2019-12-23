@@ -2,8 +2,7 @@ package fscut.manager.demo.util.websocket;
 
 import fscut.manager.demo.service.MessageService;
 import fscut.manager.demo.util.token.JwtUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -13,13 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @ServerEndpoint(value = "/websocket/{token}", encoders = {SocketEncoder.class})
 @Component
+@Slf4j
 public class WebSocketServer {
 
-    private static Logger logger = LoggerFactory.getLogger(WebSocketServer.class);
+    private static MessageService messageService;
 
-    public static MessageService messageService;
-
-    public static ConcurrentHashMap<String, WebSocketServer> webSocketMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, WebSocketServer> webSocketMap = new ConcurrentHashMap<>();
 
     private Session session;
 
@@ -31,12 +29,12 @@ public class WebSocketServer {
         this.token = token;
         String username = JwtUtils.getUsername(token);
         webSocketMap.put(username, this);
-        logger.info(username+" has login");
+        log.info(username+" has login");
         WebSocketServer.sendInfo(messageService.getUnreadMessageNum(username), username);
     }
     @OnClose
     public void onClose(){
-        logger.info("exits");
+        log.info("exits");
     }
 
     @OnMessage
