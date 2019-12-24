@@ -233,26 +233,6 @@ public class StoryServiceImpl implements StoryService {
         return storyRepository.findByDescriptionContaining(description);
     }
 
-    /**
-     * 根据用户输入进行模糊查询
-     * @param input 用户输入
-     * @param pageable 分页
-     * @return 需求
-     */
-    @Override
-    public Page<Story> searchStory(String input, Pageable pageable) {
-        List<Story> storyList = new ArrayList<>();
-        List<Story> storyNameContainingList = storyRepository.findByStoryNameContaining(input);
-        List<Story> storyDescriptionContainingList = storyRepository.findByDescriptionContaining(input);
-        if (!storyNameContainingList.isEmpty()) {
-            storyList.addAll(storyNameContainingList);
-        }
-        if (!storyDescriptionContainingList.isEmpty()) {
-            storyList.addAll(storyDescriptionContainingList);
-        }
-        return new PageImpl<>(storyList, pageable, storyList.size());
-    }
-
     @Override
     public Page<Story> selectStory(Integer productId, String startTime, String endTime, String origin, String input, Pageable pageable) {
         List<StoryUPK> storyUPKList = getStoryEditionsByProductId(productId);

@@ -33,15 +33,7 @@ public class StoryServiceImplTest {
         List<Story> storyList = storyService.getStoryByDescriptionLike("o");
         Assert.assertNotEquals(0, storyList.size());
     }
-
-    @Test
-    public void testSearchStory() throws Exception {
-        PageRequest pageRequest = PageRequest.of(0, 3);
-        Page<Story> storyPage = storyService.searchStory("次", pageRequest);
-        System.out.println(storyPage.getTotalElements());
-        Assert.assertNotEquals(0, storyPage.getTotalElements());
-    }
-
+    
     @Test
     public void testSelectStory() throws Exception {
         PageRequest pageRequest = PageRequest.of(0, 20);

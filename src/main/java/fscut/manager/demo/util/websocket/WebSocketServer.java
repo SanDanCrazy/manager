@@ -15,9 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class WebSocketServer {
 
-    private static MessageService messageService;
+    public static MessageService messageService;
 
-    private static ConcurrentHashMap<String, WebSocketServer> webSocketMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, WebSocketServer> webSocketMap = new ConcurrentHashMap<>();
 
     private Session session;
 

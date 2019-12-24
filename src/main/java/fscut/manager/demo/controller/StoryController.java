@@ -106,13 +106,6 @@ public class StoryController {
         return ResponseEntity.ok("Delete successfully!");
     }
 
-    @GetMapping("searchStory")
-    public ResponseEntity<Page<Story>> searchStory(String input, Integer page, Integer size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Story> searchStoryPage = storyService.searchStory(input, pageRequest);
-        return ResponseEntity.ok(searchStoryPage);
-    }
-
     @PostMapping("selectStory")
     public ResponseEntity selectStory(Integer productId, String startTime, String endTime, String origin, String userInput, Integer page, Integer size)  {
         PageRequest pageRequest = PageRequest.of(page, size);
