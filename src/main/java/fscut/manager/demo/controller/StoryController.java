@@ -51,10 +51,10 @@ public class StoryController {
         Optional<Story> optional = storyService.addStory(story);
         messageService.addMessage(optional.get(),"新建");
 
-
         try{
             WebSocketServer.sendInfo(messageService.getUnreadMessageNum(optional.get().getDesignId()),
                     customerService.getUsernameById(optional.get().getDesignId()));
+
         }catch (Exception e){
             return null;
         }
@@ -67,6 +67,7 @@ public class StoryController {
 
         Story story = storyService.convertStoryVO2Story(storyVO);
         Optional<Story> optional = storyService.editStory(story);
+
         return ResponseEntity.ok(optional.get());
     }
 
@@ -115,8 +116,8 @@ public class StoryController {
 
     @GetMapping("download")
     public void download(HttpServletResponse response) throws IOException{
-        response.setContentType("text/csv");
-        response.setHeader("Content-Disposition","attachment;file=writeCSV.csv");
+        response.setContentType("application/x-download");
+        response.setHeader("Content-Disposition","attachment;filename="+CsvUtils.FILE_NAME);
         CsvUtils.download(storyService.getStoriesByProductId(1,1));
     }
 

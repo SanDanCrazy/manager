@@ -10,13 +10,17 @@ import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Date;
 
 @Entity
 @Table(name = "story")
 @DynamicUpdate
 @JsonInclude(Include.NON_NULL)
-public class Story {
+public class Story implements Serializable {
+
+
+    private static final long serialVersionUID = -5246468425523820009L;
 
     public interface StoryListSimpleView{}
 

@@ -18,13 +18,13 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping("create")
-    public ResponseEntity create(String productName) {
+    public ResponseEntity<Product> create(String productName) {
         Product product = productService.save(productName);
         return ResponseEntity.ok(product);
     }
 
     @GetMapping("delete")
-    public ResponseEntity delete(Integer productId) {
+    public ResponseEntity<String> delete(Integer productId) {
         productService.deleteProduct(productId);
         return ResponseEntity.ok("delete successfully");
     }
