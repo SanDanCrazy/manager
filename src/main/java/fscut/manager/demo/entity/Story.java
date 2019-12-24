@@ -30,7 +30,7 @@ public class Story implements Serializable {
     @Column(name = "origin")
     private String origin;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @Column(name = "put_time", nullable = false)
     private Date putTime;
 
@@ -55,14 +55,14 @@ public class Story implements Serializable {
     @Column(name = "test_id")
     private Integer testId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     @Column(name = "test_time")
     private Date testTime;
 
     @Column(name = "edit_id", nullable = false)
     private Integer editId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @Column(name = "update_time", nullable = false)
     private java.util.Date updateTime;
 
@@ -175,5 +175,24 @@ public class Story implements Serializable {
 
     public void setUpdateTime(java.util.Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Story{" +
+                "storyUPK=" + storyUPK +
+                ", origin='" + origin + '\'' +
+                ", putTime=" + putTime +
+                ", storyName='" + storyName + '\'' +
+                ", storyStatus=" + storyStatus +
+                ", description='" + description + '\'' +
+                ", conclusion='" + conclusion + '\'' +
+                ", designId=" + designId +
+                ", devId=" + devId +
+                ", testId=" + testId +
+                ", testTime=" + testTime +
+                ", editId=" + editId +
+                ", updateTime=" + updateTime +
+                '}';
     }
 }

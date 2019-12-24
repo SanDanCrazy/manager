@@ -26,8 +26,8 @@ import java.time.ZoneId;
 import java.util.Date;
 
 public class JwtAuthFilter extends AuthenticatingFilter {
-	private final Logger log = LoggerFactory.getLogger(JwtAuthFilter.class);
-	
+    private final Logger log = LoggerFactory.getLogger(JwtAuthFilter.class);
+
     private static final int tokenRefreshInterval = 300;
     private UserService userService;
 
@@ -57,7 +57,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
             return true;
         Boolean afterFiltered = (Boolean)(request.getAttribute("jwtShiroFilter.FILTERED"));
         if( BooleanUtils.isTrue(afterFiltered))
-        	return true;
+            return true;
 
         boolean allowed = false;
         try {
@@ -130,7 +130,8 @@ public class JwtAuthFilter extends AuthenticatingFilter {
 
     protected void fillCorsHeader(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
         httpServletResponse.setHeader("Access-control-Allow-Origin", httpServletRequest.getHeader("Origin"));
-        httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,HEAD");
+        httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,HEAD, DELETE, PUT");
         httpServletResponse.setHeader("Access-Control-Allow-Headers", httpServletRequest.getHeader("Access-Control-Request-Headers"));
+        httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true");
     }
 }

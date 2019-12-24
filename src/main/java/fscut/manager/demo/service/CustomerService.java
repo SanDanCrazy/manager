@@ -32,4 +32,5 @@ public interface CustomerService {
 
     Integer getIdByUsername(String username);
 
+    List<Customer> getCustomers();
 }

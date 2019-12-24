@@ -2,8 +2,10 @@ package fscut.manager.demo.controller;
 
 import fscut.manager.demo.dto.StoryDetailDTO;
 import fscut.manager.demo.dto.UserDto;
+import fscut.manager.demo.entity.Customer;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.UPK.StoryUPK;
+import fscut.manager.demo.exception.CustomerNoAuthorityException;
 import fscut.manager.demo.service.CustomerService;
 import fscut.manager.demo.service.MessageService;
 import fscut.manager.demo.service.StoryService;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
@@ -30,16 +33,16 @@ import java.util.Optional;
 @RequestMapping("story")
 public class StoryController {
 
-    @Autowired
+    @Resource
     private StoryService storyService;
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private CustomerService customerService;
 
-    @Autowired
+    @Resource
     private MessageService messageService;
 
     @PostMapping("newStory")
@@ -51,10 +54,10 @@ public class StoryController {
         Optional<Story> optional = storyService.addStory(story);
         messageService.addMessage(optional.get(),"新建");
 
+
         try{
             WebSocketServer.sendInfo(messageService.getUnreadMessageNum(optional.get().getDesignId()),
                     customerService.getUsernameById(optional.get().getDesignId()));
-
         }catch (Exception e){
             return null;
         }
@@ -67,19 +70,19 @@ public class StoryController {
 
         Story story = storyService.convertStoryVO2Story(storyVO);
         Optional<Story> optional = storyService.editStory(story);
-
         return ResponseEntity.ok(optional.get());
     }
 
     @GetMapping("product/{id}")
-    public ResponseEntity<List<Story>> showProductStories(@PathVariable("id") Integer id){
+    public ResponseEntity<Page<Story>> showProductStories(@PathVariable("id") Integer id, Integer page, Integer size) throws CustomerNoAuthorityException {
         userService.userAllowed(id);
 
         Subject subject = SecurityUtils.getSubject();
         UserDto user = (UserDto) subject.getPrincipal();
-        List<Story> stories = storyService.getStoriesByProductId(id, user.getUserId());
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Story> storyPage = storyService.getStoriesByProductId(id, user.getUserId(), pageRequest);
 
-        return ResponseEntity.ok(stories);
+        return ResponseEntity.ok(storyPage);
     }
 
     @GetMapping("Story")
@@ -91,7 +94,7 @@ public class StoryController {
         return ResponseEntity.ok(storyDetailDTO);
     }
 
-    @GetMapping("history")
+    @PostMapping("history")
     public ResponseEntity<List<Story>> showStoryHistory(@RequestBody StoryUPK storyUPK){
         userService.userAllowed(storyUPK.getProductId());
 
@@ -107,17 +110,17 @@ public class StoryController {
         return ResponseEntity.ok("Delete successfully!");
     }
 
-    @GetMapping("searchStory")
-    public ResponseEntity<Page<Story>> searchStory(String input, Integer page, Integer size) {
+    @PostMapping("selectStory")
+    public ResponseEntity selectStory(Integer productId, String startTime, String endTime, String origin, String userInput, Integer page, Integer size)  {
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Story> searchStoryPage = storyService.searchStory(input, pageRequest);
-        return ResponseEntity.ok(searchStoryPage);
+        Page<Story> stories = storyService.selectStory(productId, startTime, endTime, origin, userInput, pageRequest);
+        return ResponseEntity.ok(stories);
     }
 
     @GetMapping("download")
     public void download(HttpServletResponse response) throws IOException{
-        response.setContentType("application/x-download");
-        response.setHeader("Content-Disposition","attachment;filename="+CsvUtils.FILE_NAME);
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition","attachment;file=writeCSV.csv");
         CsvUtils.download(storyService.getStoriesByProductId(1,1));
     }
 

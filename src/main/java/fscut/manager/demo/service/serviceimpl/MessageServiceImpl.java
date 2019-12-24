@@ -7,26 +7,25 @@ import fscut.manager.demo.entity.Message;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.service.MessageService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
+import javax.annotation.Resource;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    @Autowired
+    @Resource
     private CustomerRepository customerRepository;
 
-    @Autowired
+    @Resource
     private MessageRepository messageRepository;
 
     @Override
     public void addMessage(Story story, String action) {
-        if(story == null)
+        if(story == null) {
             return;
+        }
         String content = String.format("%s %s %s 需求",customerRepository.findRealNameByCustomerId(story.getEditId()),action,story.getStoryName());
         Message message = new Message();
         BeanUtils.copyProperties(story,message);
@@ -42,15 +41,13 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<Message> getMessage(Integer customerId) {
         List<Integer> messageIds = messageRepository.getMessageId(customerId);
-        List<Message> messageList = messageRepository.findMessagesByMessageIdIn(messageIds);
-        return messageList;
+        return messageRepository.findMessagesByMessageIdIn(messageIds);
     }
 
     @Override
-    public List<Message> getMessage(String username){
+    public List<Message> getMessage(String username) {
         List<Integer> messageIds = messageRepository.getMessageId(username);
-        List<Message> messageList = messageRepository.findMessagesByMessageIdIn(messageIds);
-        return messageList;
+        return messageRepository.findMessagesByMessageIdIn(messageIds);
     }
 
     @Override

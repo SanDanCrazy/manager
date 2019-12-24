@@ -114,7 +114,8 @@ public class ShiroConfig {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
         chainDefinition.addPathDefinition("/login", "noSessionCreation,anon");
         chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken[permissive]");
-        chainDefinition.addPathDefinition("/customer/**", "noSessionCreation,authcToken,anyRole[manager,admin]"); //只允许admin或manager角色的用户访问
+        chainDefinition.addPathDefinition("/image/**", "anon");
+        chainDefinition.addPathDefinition("/customer/**", "noSessionCreation,authcToken,anyRole[admin,manager]"); //只允许admin或manager角色的用户访问
         chainDefinition.addPathDefinition("/story/**", "noSessionCreation,authcToken,anyRole[partner,manager,admin]");
         chainDefinition.addPathDefinition("/product/**", "noSessionCreation,authcToken,anyRole[manager,admin]");
         chainDefinition.addPathDefinition("/message/**", "noSessionCreation,authcToken,anyRole[manager,partner,admin]");

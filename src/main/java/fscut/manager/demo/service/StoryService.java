@@ -29,7 +29,7 @@ public interface StoryService {
 
     StoryDetailDTO getStoryInfo(StoryUPK storyUPK);
 
-    List<Story> getStoriesByProductId(Integer productId, Integer customerId);
+    Page<Story> getStoriesByProductId(Integer productId, Integer customerId, Pageable pageable);
 
     Story convertStoryVO2Story(StoryVO storyVO);
 
@@ -49,10 +49,12 @@ public interface StoryService {
     List<Story> getStoryByDescriptionLike(String description);
 
     /**
-     * 用户输入搜索
+     * 筛选即搜索需求
+     * @param startTime 起始时间
+     * @param endTime 终止时间
+     * @param origin 来源
      * @param input 用户输入
-     * @param pageable 分页
      * @return 需求分页
      */
-    Page<Story> searchStory(String input, Pageable pageable);
+    Page<Story> selectStory(Integer productId, String startTime, String endTime, String origin, String input, Pageable pageable);
 }
