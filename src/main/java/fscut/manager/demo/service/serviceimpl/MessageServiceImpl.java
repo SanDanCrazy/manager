@@ -40,14 +40,12 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<Message> getMessage(Integer customerId) {
-        List<Integer> messageIds = messageRepository.getMessageId(customerId);
-        return messageRepository.findMessagesByMessageIdIn(messageIds);
+        return messageRepository.getMessageByCustomerId(customerId);
     }
 
     @Override
     public List<Message> getMessage(String username) {
-        List<Integer> messageIds = messageRepository.getMessageId(username);
-        return messageRepository.findMessagesByMessageIdIn(messageIds);
+        return messageRepository.getMessageByUsername(username);
     }
 
     @Override

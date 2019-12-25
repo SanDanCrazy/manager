@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -157,6 +158,13 @@ public class StoryServiceImpl implements StoryService {
         return storyList;
     }
 
+    /**
+     * 用于前端展示产品需求，使用分页实现
+     * @param productId
+     * @param customerId
+     * @param pageable
+     * @return
+     */
     @Override
     public Page<Story> getStoriesByProductId(Integer productId, Integer customerId,Pageable pageable) {
         if(customerRepository.findRoleByCustomerIdAndProductId(customerId, productId) != null){
@@ -169,10 +177,22 @@ public class StoryServiceImpl implements StoryService {
             return new PageImpl<>(storyList.subList(start, end), pageable, storyList.size());
         }
         else{
-            return new ArrayList<>();
+            return null;
         }
+    }
 
-
+    /**
+     * 用于导出需求，不需要分页功能
+     * @param productId
+     * @param customerId
+     * @return
+     */
+    @Override
+    public List<Story> getStoriesByProductId(Integer productId, Integer customerId){
+        if(customerRepository.findRoleByCustomerIdAndProductId(customerId,productId) != null){
+            return getStoriesByEditions(getStoryEditionsByProductId(productId));
+        }
+        return new ArrayList<>();
     }
 
     @Override

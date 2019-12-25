@@ -30,7 +30,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("story")
+//@RequestMapping("story")
 public class StoryController {
 
     @Resource
@@ -118,10 +118,13 @@ public class StoryController {
     }
 
     @GetMapping("download")
-    public void download(HttpServletResponse response) throws IOException{
-        response.setContentType("text/csv");
-        response.setHeader("Content-Disposition","attachment;file=writeCSV.csv");
-        CsvUtils.download(storyService.getStoriesByProductId(1,1));
+    public void download(Integer productId,HttpServletResponse response) throws IOException{
+        userService.userAllowed(productId);
+        response.setContentType("application/csv");
+        response.setHeader("Content-Disposition","attachment;filename=writeCSV.csv");
+        Subject subject = SecurityUtils.getSubject();
+        UserDto user = (UserDto) subject.getPrincipal();
+        CsvUtils.download(storyService.getStoriesByProductId(productId,user.getUserId()), response);
     }
 
 

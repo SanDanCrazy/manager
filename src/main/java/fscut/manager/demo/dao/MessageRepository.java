@@ -19,13 +19,11 @@ public interface MessageRepository extends JpaRepository<Message,Integer> {
     @Query(value = "select distinct message_id from customer_message where customer_id = ?1 and checked = 0",nativeQuery = true)
     List<Integer> getUnreadMessageId(@Param("customer_id") Integer customerId);
 
-    @Query(value = "select distinct message_id from customer_message where customer_id = ?1",nativeQuery = true)
-    List<Integer> getMessageId(@Param("customer_id") Integer customerId);
+    @Query(value = "select * from customer_message as cm left join message as m on cm.message_id = m.message_id where cm.customer_id = ?1",nativeQuery = true)
+    List<Message> getMessageByCustomerId(Integer customerId);
 
-    @Query(value = "select distinct message_id from customer_message as cm left join customer as c on cm.customer_id = c.id where c.username = ?1",nativeQuery = true)
-    List<Integer> getMessageId(@Param("username") String username);
-
-    List<Message> findMessagesByMessageIdIn(List<Integer> messageId);
+    @Query(value = "select * from customer_message as cm left join customer as c on cm.customer_id = c.id left join message as m on cm.message_id = m.message_id where c.username = ?1",nativeQuery = true)
+    List<Message> getMessageByUsername(String username);
 
     @Modifying
     @Transactional

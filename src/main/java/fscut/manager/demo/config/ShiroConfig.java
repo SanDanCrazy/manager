@@ -101,7 +101,7 @@ public class ShiroConfig {
         factoryBean.setSecurityManager(securityManager);
         Map<String, Filter> filterMap = factoryBean.getFilters();
         filterMap.put("authcToken", createAuthFilter(userService));
-        filterMap.put("anyRole", createAnyRolesAuthFilter(userService));
+        filterMap.put("anyRole", createAnyRolesAuthFilter());
         factoryBean.setFilters(filterMap);
         factoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition().getFilterChainMap());
 
@@ -127,8 +127,8 @@ public class ShiroConfig {
         return new JwtAuthFilter(userService);
     }
 
-    protected AnyRolesAuthFilter createAnyRolesAuthFilter(UserService userService){
-        return new AnyRolesAuthFilter(userService);
+    protected AnyRolesAuthFilter createAnyRolesAuthFilter(){
+        return new AnyRolesAuthFilter();
     }
 
 }
