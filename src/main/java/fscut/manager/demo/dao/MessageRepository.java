@@ -1,6 +1,7 @@
 package fscut.manager.demo.dao;
 
 import fscut.manager.demo.entity.Message;
+import fscut.manager.demo.vo.MessageVO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,11 +20,9 @@ public interface MessageRepository extends JpaRepository<Message,Integer> {
     @Query(value = "select distinct message_id from customer_message where customer_id = ?1 and checked = 0",nativeQuery = true)
     List<Integer> getUnreadMessageId(@Param("customer_id") Integer customerId);
 
-    @Query(value = "select * from customer_message as cm left join message as m on cm.message_id = m.message_id where cm.customer_id = ?1",nativeQuery = true)
-    List<Message> getMessageByCustomerId(Integer customerId);
+    @Query(value = "select new fscut.manager.demo.vo.MessageVO(m.messageId, m.storyUPK, m.content, m.createdTime,cm.customerId,cm.checked) from CustomerMessage cm ,Message m where cm.messageId = m.messageId and cm.customerId = :customerId")
+    List<MessageVO> getMessageByCustomerId(@Param("customerId") Integer customerId);
 
-    @Query(value = "select * from customer_message as cm left join customer as c on cm.customer_id = c.id left join message as m on cm.message_id = m.message_id where c.username = ?1",nativeQuery = true)
-    List<Message> getMessageByUsername(String username);
 
     @Modifying
     @Transactional

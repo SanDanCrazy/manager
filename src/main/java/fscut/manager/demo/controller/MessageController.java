@@ -6,6 +6,7 @@ import fscut.manager.demo.entity.CustomerMessage;
 import fscut.manager.demo.entity.Message;
 import fscut.manager.demo.service.MessageService;
 import fscut.manager.demo.util.websocket.WebSocketServer;
+import fscut.manager.demo.vo.MessageVO;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +33,10 @@ public class MessageController{
      }
 
      @GetMapping("getMessageList")
-     public ResponseEntity<List<Message>> getMessageList(){
+     public ResponseEntity<List<MessageVO>> getMessageList(){
           Subject subject = SecurityUtils.getSubject();
           UserDto user = (UserDto) subject.getPrincipal();
-          List<Message> messageList = messageService.getMessage(user.getUserId());
+          List<MessageVO> messageList = messageService.getMessage(user.getUserId());
           return ResponseEntity.ok(messageList);
      }
 
@@ -50,22 +51,6 @@ public class MessageController{
           messageService.deleteMessage(cMessage.getMessageId(),cMessage.getCustomerId());
           return ResponseEntity.ok(null);
      }
-
-     @GetMapping("/socket/push")
-     public Object pushToWeb(){
-          Subject subject = SecurityUtils.getSubject();
-          UserDto user = (UserDto) subject.getPrincipal();
-          Integer num = messageService.getUnreadMessageNum(user.getUserId());
-          if(num != 0){
-               try{
-                    WebSocketServer.sendInfo(messageService.getMessage(user.getUserId()), user.getUsername());
-               }catch (Exception e){
-                    e.printStackTrace();
-               }
-          }
-          return "good";
-     }
-
 
 
 }

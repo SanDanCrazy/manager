@@ -30,7 +30,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-//@RequestMapping("story")
+@RequestMapping("story")
 public class StoryController {
 
     @Resource
@@ -111,21 +111,20 @@ public class StoryController {
     }
 
     @PostMapping("selectStory")
-    public ResponseEntity selectStory(Integer productId, String startTime, String endTime, String origin, String userInput, Integer page, Integer size)  {
+    public ResponseEntity<Page<Story>> selectStory(Integer productId, String startTime, String endTime, String origin, String userInput, Integer page, Integer size)  {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Story> stories = storyService.selectStory(productId, startTime, endTime, origin, userInput, pageRequest);
         return ResponseEntity.ok(stories);
     }
 
     @GetMapping("download")
-    public void download(Integer productId,HttpServletResponse response) throws IOException{
+    public ResponseEntity<Void> download(Integer productId,HttpServletResponse response) throws IOException{
         userService.userAllowed(productId);
         response.setContentType("application/csv");
         response.setHeader("Content-Disposition","attachment;filename=writeCSV.csv");
         Subject subject = SecurityUtils.getSubject();
         UserDto user = (UserDto) subject.getPrincipal();
         CsvUtils.download(storyService.getStoriesByProductId(productId,user.getUserId()), response);
+        return ResponseEntity.ok(null);
     }
-
-
 }

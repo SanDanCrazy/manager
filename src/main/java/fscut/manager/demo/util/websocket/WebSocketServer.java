@@ -22,19 +22,20 @@ public class WebSocketServer {
 
     private Session session;
 
-    private String token;
+    private String username;
 
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token) throws Exception{
         this.session = session;
-        this.token = token;
-        String username = JwtUtils.getUsername(token);
+        this.username = JwtUtils.getUsername(token);
         webSocketMap.put(username, this);
         log.info(username+" has login");
         WebSocketServer.sendInfo(messageService.getUnreadMessageNum(username), username);
     }
+
     @OnClose
     public void onClose(){
+        webSocketMap.remove(username);
         log.info("exits");
     }
 

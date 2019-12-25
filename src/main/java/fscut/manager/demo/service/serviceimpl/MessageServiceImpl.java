@@ -6,6 +6,7 @@ import fscut.manager.demo.dao.MessageRepository;
 import fscut.manager.demo.entity.Message;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.service.MessageService;
+import fscut.manager.demo.vo.MessageVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -39,14 +40,10 @@ public class MessageServiceImpl implements MessageService {
 
 
     @Override
-    public List<Message> getMessage(Integer customerId) {
+    public List<MessageVO> getMessage(Integer customerId) {
         return messageRepository.getMessageByCustomerId(customerId);
     }
 
-    @Override
-    public List<Message> getMessage(String username) {
-        return messageRepository.getMessageByUsername(username);
-    }
 
     @Override
     public void readMessage(Integer messageId, Integer customerId) {
