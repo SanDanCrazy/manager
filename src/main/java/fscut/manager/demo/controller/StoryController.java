@@ -174,7 +174,7 @@ public class StoryController {
     public ResponseEntity<FileSystemResource> download(Integer productId, HttpServletResponse response) {
         userService.userAllowed(productId);
         //response.setContentType("application/csv");
-        response.setHeader("Content-Disposition","attachment;filename=writeCSV.csv");
+        //response.setHeader("Content-Disposition","attachment;filename=writeCSV.csv");
         Subject subject = SecurityUtils.getSubject();
         UserDto user = (UserDto) subject.getPrincipal();
         HttpHeaders headers = new HttpHeaders();
@@ -185,6 +185,7 @@ public class StoryController {
         headers.add("Last-Modified", new Date().toString());
         headers.add("ETag", String.valueOf(System.currentTimeMillis()));
 
+        CsvUtils.download(storyService.getStoriesByProductId(productId, user.getUserId()), response);
         File file = new File("D:\\writeCSV.csv");
         if (file == null) {
             return null;
