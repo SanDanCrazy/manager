@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -132,11 +131,11 @@ public class StoryServiceImpl implements StoryService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public void deleteStory(StoryUPK storyUPK) {
+    public Integer deleteStory(StoryUPK storyUPK) {
 
         storyRepository.deleteStories(storyUPK);
 
-        storyRepository.deleteEditionByStoryUPK(storyUPK);
+        return storyRepository.deleteEditionByStoryUPK(storyUPK);
     }
 
     @Override
@@ -160,36 +159,37 @@ public class StoryServiceImpl implements StoryService {
 
     /**
      * 用于前端展示产品需求，使用分页实现
-     * @param productId
-     * @param customerId
-     * @param pageable
-     * @return
+     * @param productId 产品id
+     * @param customerId 用户id
+     * @param pageable 分页
+     * @return 需求分页
      */
     @Override
-    public Page<Story> getStoriesByProductId(Integer productId, Integer customerId,Pageable pageable) {
+    public Page<Story> getStoriesByProductId(Integer productId, Integer customerId, Pageable pageable) {
         if(customerRepository.findRoleByCustomerIdAndProductId(customerId, productId) != null){
             List<Story> storyList = getStoriesByEditions(getStoryEditionsByProductId(productId));
-            // 当前页第一条数据在List中的位置
-            int start = (int) pageable.getOffset();
-            // 当前页最后一条数据在List中的位置
-            int end = (start + pageable.getPageSize()) > storyList.size() ? storyList.size() : ( start + pageable.getPageSize());
-            // 配置分页数据
-            return new PageImpl<>(storyList.subList(start, end), pageable, storyList.size());
+            int fromIndex = pageable.getPageSize() * pageable.getPageNumber();
+            int toIndex = pageable.getPageSize() * (pageable.getPageNumber() + 1);
+            int totalElements = storyList.size();
+            if(toIndex > totalElements) {
+                toIndex = totalElements;
+            }
+            return new PageImpl<>(storyList.subList(fromIndex, toIndex), pageable, storyList.size());
         }
-        else{
+        else {
             return null;
         }
     }
 
     /**
      * 用于导出需求，不需要分页功能
-     * @param productId
-     * @param customerId
-     * @return
+     * @param productId 产品id
+     * @param customerId 用户id
+     * @return 需求列表
      */
     @Override
-    public List<Story> getStoriesByProductId(Integer productId, Integer customerId){
-        if(customerRepository.findRoleByCustomerIdAndProductId(customerId,productId) != null){
+    public List<Story> getStoriesByProductId(Integer productId, Integer customerId) {
+        if(customerRepository.findRoleByCustomerIdAndProductId(customerId, productId) != null) {
             return getStoriesByEditions(getStoryEditionsByProductId(productId));
         }
         return new ArrayList<>();
@@ -267,7 +267,7 @@ public class StoryServiceImpl implements StoryService {
         int fromIndex = pageable.getPageSize() * pageable.getPageNumber();
         int toIndex = pageable.getPageSize() * (pageable.getPageNumber() + 1);
         int totalElements = storyList.size();
-        if(toIndex>totalElements) {
+        if(toIndex > totalElements) {
             toIndex = totalElements;
         }
         List<Story> indexObjects = storyList.subList(fromIndex,toIndex);
