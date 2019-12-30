@@ -27,6 +27,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 该类中函数第一个参数必须含有标识产品id的属性，例如storyVO,storyUPK,productId
+ */
+
 
 @RestController
 @CrossOrigin
@@ -47,7 +51,8 @@ public class StoryController {
 
     @PostMapping("newStory")
     public ResponseEntity<Story> newStory(@RequestBody StoryVO storyVO){
-        userService.userAllowed(storyVO.getStoryUPK().getProductId());
+        //可以把验证用户做成一个切面
+        //userService.userAllowed(storyVO.getStoryUPK().getProductId());
 
         Story story = storyService.convertStoryVO2Story(storyVO);
 
@@ -66,28 +71,28 @@ public class StoryController {
 
     @PostMapping("editStory")
     public ResponseEntity<Story> editStory(@RequestBody StoryVO storyVO){
-        userService.userAllowed(storyVO.getStoryUPK().getProductId());
+        //userService.userAllowed(storyVO.getStoryUPK().getProductId());
 
         Story story = storyService.convertStoryVO2Story(storyVO);
         Optional<Story> optional = storyService.editStory(story);
         return ResponseEntity.ok(optional.get());
     }
 
-    @GetMapping("product/{id}")
-    public ResponseEntity<Page<Story>> showProductStories(@PathVariable("id") Integer id, Integer page, Integer size) throws CustomerNoAuthorityException {
-        userService.userAllowed(id);
+    @GetMapping("product/{productId}")
+    public ResponseEntity<Page<Story>> showProductStories(@PathVariable("productId") Integer productId, Integer page, Integer size) throws CustomerNoAuthorityException {
+       // userService.userAllowed(productId);
 
         Subject subject = SecurityUtils.getSubject();
         UserDto user = (UserDto) subject.getPrincipal();
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Story> storyPage = storyService.getStoriesByProductId(id, user.getUserId(), pageRequest);
+        Page<Story> storyPage = storyService.getStoriesByProductId(productId, user.getUserId(), pageRequest);
 
         return ResponseEntity.ok(storyPage);
     }
 
     @GetMapping("Story")
     public ResponseEntity<StoryDetailDTO> showStoryInfo(Integer productId, Integer storyId, Integer edition){
-        userService.userAllowed(productId);
+        //userService.userAllowed(productId);
 
         StoryUPK storyUPK = new StoryUPK(productId, storyId, edition);
         StoryDetailDTO storyDetailDTO = storyService.getStoryInfo(storyUPK);
@@ -96,7 +101,7 @@ public class StoryController {
 
     @PostMapping("history")
     public ResponseEntity<List<Story>> showStoryHistory(@RequestBody StoryUPK storyUPK){
-        userService.userAllowed(storyUPK.getProductId());
+        //userService.userAllowed(storyUPK.getProductId());
 
         List<Story> stories = storyService.getStoryHistory(storyUPK);
         return ResponseEntity.ok(stories);
@@ -104,7 +109,7 @@ public class StoryController {
 
     @DeleteMapping("deleteStory")
     public ResponseEntity<String> deleteStory(@RequestBody StoryUPK storyUPK){
-        userService.userAllowed(storyUPK.getProductId());
+        //userService.userAllowed(storyUPK.getProductId());
 
         storyService.deleteStory(storyUPK);
         return ResponseEntity.ok("Delete successfully!");
@@ -119,7 +124,7 @@ public class StoryController {
 
     @GetMapping("download")
     public ResponseEntity<Void> download(Integer productId,HttpServletResponse response) throws IOException{
-        userService.userAllowed(productId);
+        //userService.userAllowed(productId);
         response.setContentType("application/csv");
         response.setHeader("Content-Disposition","attachment;filename=writeCSV.csv");
         Subject subject = SecurityUtils.getSubject();
