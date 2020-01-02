@@ -23,4 +23,7 @@ public interface StoryEditionRepository extends JpaRepository<StoryEdition, Stor
     @Modifying
     @Query(value = "update story_edition set edition = :#{#storyEdition.storyUPK.edition} where product_id = :#{#storyEdition.storyUPK.productId} and story_id = :#{#storyEdition.storyUPK.storyId}",nativeQuery = true)
     void updateEdition(@Param("storyEdition") StoryEdition storyEdition);
+
+    @Query("select new fscut.manager.demo.entity.UPK.StoryUPK(s.storyUPK.productId, s.storyUPK.storyId, s.storyUPK.edition) from StoryEdition s where s.storyUPK.productId = :productId and s.storyUPK.storyId = :storyId order by s.storyUPK.edition desc")
+    List<StoryUPK> findStoryEditionsByProductIdAndStoryId(@Param("productId") Integer productId, @Param("storyId") Integer storyId);
 }

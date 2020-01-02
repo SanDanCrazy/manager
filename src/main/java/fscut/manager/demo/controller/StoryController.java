@@ -12,6 +12,7 @@ import fscut.manager.demo.service.StoryService;
 import fscut.manager.demo.service.serviceimpl.UserService;
 import fscut.manager.demo.util.CsvUtils;
 import fscut.manager.demo.util.websocket.WebSocketServer;
+import fscut.manager.demo.vo.StoryDetailVO;
 import fscut.manager.demo.vo.StoryVO;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
@@ -98,6 +99,7 @@ public class StoryController {
             return ResponseEntity.ok("为空！");
         }
 
+
         Message message = messageService.addUpdateMessage(updatedStory);
 
         Integer designId = updatedStory.getDesignId();
@@ -112,6 +114,7 @@ public class StoryController {
         if (testId != null) {
             WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(testId));
         }
+
 
         return ResponseEntity.ok(updatedStory);
     }
@@ -129,12 +132,12 @@ public class StoryController {
     }
 
     @GetMapping("Story")
-    public ResponseEntity<StoryDetailDTO> showStoryInfo(Integer productId, Integer storyId, Integer edition){
+    public ResponseEntity<StoryDetailVO> showStoryInfo(Integer productId, Integer storyId, Integer edition){
         userService.userAllowed(productId);
 
         StoryUPK storyUPK = new StoryUPK(productId, storyId, edition);
-        StoryDetailDTO storyDetailDTO = storyService.getStoryInfo(storyUPK);
-        return ResponseEntity.ok(storyDetailDTO);
+        StoryDetailVO storyDetailVO = storyService.getStoryInfo(storyUPK);
+        return ResponseEntity.ok(storyDetailVO);
     }
 
     @PostMapping("history")
