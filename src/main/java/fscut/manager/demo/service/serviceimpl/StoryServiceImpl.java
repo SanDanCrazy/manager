@@ -4,8 +4,10 @@ import fscut.manager.demo.dao.CustomerRepository;
 import fscut.manager.demo.dao.StoryDetailRepository;
 import fscut.manager.demo.dao.StoryEditionRepository;
 import fscut.manager.demo.dao.StoryRepository;
+import fscut.manager.demo.dto.CustomerListDTO;
 import fscut.manager.demo.dto.StoryDetailDTO;
 import fscut.manager.demo.dto.UserDto;
+import fscut.manager.demo.entity.Customer;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.StoryDetail;
 import fscut.manager.demo.entity.StoryEdition;
@@ -84,7 +86,7 @@ public class StoryServiceImpl implements StoryService {
         StoryUPK newStoryUPK = storyEditionRepository.findStoryEditionsByProductIdAndStoryId(productId,storyId).get(0);
 
         List<StoryDetail> storyDetails = storyDetailRepository.getStoryDetailsByProductIdAndStoryId(productId,storyId);
-        if(storyDetails == null){
+        if(storyDetails.size() == 0){
             Optional<Story> story = storyRepository.findById(newStoryUPK);
             StoryDetailVO result = new StoryDetailVO();
             result.setStory(story.get());
@@ -230,7 +232,7 @@ public class StoryServiceImpl implements StoryService {
             result.setEditName(customerRepository.findRealNameByCustomerId(newStory.getEditId()));
             result.setAttribute("需求状态");
             result.setPrevious(StoryStatusEnum.getMessage(lastStory.getStoryStatus()));
-            result.setModified(StoryStatusEnum.getMessage(lastStory.getStoryStatus()));
+            result.setModified(StoryStatusEnum.getMessage(newStory.getStoryStatus()));
             storyDetailRepository.save(result);
         }
     }
@@ -261,6 +263,20 @@ public class StoryServiceImpl implements StoryService {
     @Override
     public List<StoryUPK> getStoryEditionsByProductId(Integer productId) {
         return storyEditionRepository.findStoryEditionsByProductId(productId);
+    }
+
+    @Override
+    public CustomerListDTO getCustomers(Integer productId) {
+
+        List<Customer> designerList = customerRepository.getCustomersByProductIdAndRole(productId, 1);
+        List<Customer> developerList = customerRepository.getCustomersByProductIdAndRole(productId, 2);
+        List<Customer> testerList = customerRepository.getCustomersByProductIdAndRole(productId, 3);
+        CustomerListDTO customerListDTO = new CustomerListDTO();
+        customerListDTO.setDesigner(designerList);
+        customerListDTO.setDeveloper(developerList);
+        customerListDTO.setTester(testerList);
+        return customerListDTO;
+
     }
 
     /**

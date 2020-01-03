@@ -1,5 +1,6 @@
 package fscut.manager.demo.service;
 
+import fscut.manager.demo.dto.CustomerListDTO;
 import fscut.manager.demo.dto.StoryDetailDTO;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.UPK.StoryUPK;
@@ -35,6 +36,8 @@ public interface StoryService {
     List<Story> getStoriesByProductId(Integer productId, Integer customerId);
 
     Story convertStoryVO2Story(StoryVO storyVO);
+
+    CustomerListDTO getCustomers(Integer productId);
 
 
     /**

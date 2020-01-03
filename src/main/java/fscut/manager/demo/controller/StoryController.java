@@ -1,5 +1,6 @@
 package fscut.manager.demo.controller;
 
+import fscut.manager.demo.dto.CustomerListDTO;
 import fscut.manager.demo.dto.StoryDetailDTO;
 import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Customer;
@@ -52,7 +53,7 @@ public class StoryController {
 
     @PostMapping("newStory")
     public ResponseEntity newStory(@RequestBody StoryVO storyVO){
-        userService.userAllowed(storyVO.getStoryUPK().getProductId());
+        //userService.userAllowed(storyVO.getStoryUPK().getProductId());
 
         Story story = storyService.convertStoryVO2Story(storyVO);
 
@@ -87,7 +88,7 @@ public class StoryController {
 
     @PostMapping("editStory")
     public ResponseEntity editStory(@RequestBody StoryVO storyVO) {
-        userService.userAllowed(storyVO.getStoryUPK().getProductId());
+        //userService.userAllowed(storyVO.getStoryUPK().getProductId());
 
         Story story = storyService.convertStoryVO2Story(storyVO);
         Optional<Story> optional = storyService.editStory(story);
@@ -102,18 +103,18 @@ public class StoryController {
 
         Message message = messageService.addUpdateMessage(updatedStory);
 
-        Integer designId = updatedStory.getDesignId();
-        Integer devId = updatedStory.getDevId();
-        Integer testId = updatedStory.getTestId();
-        if (designId != null) {
-            WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(designId));
-        }
-        if (devId != null) {
-            WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(devId));
-        }
-        if (testId != null) {
-            WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(testId));
-        }
+//        Integer designId = updatedStory.getDesignId();
+//        Integer devId = updatedStory.getDevId();
+//        Integer testId = updatedStory.getTestId();
+//        if (designId != null) {
+//            WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(designId));
+//        }
+//        if (devId != null) {
+//            WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(devId));
+//        }
+//        if (testId != null) {
+//            WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(testId));
+//        }
 
 
         return ResponseEntity.ok(updatedStory);
@@ -121,7 +122,7 @@ public class StoryController {
 
     @GetMapping("product/{id}")
     public ResponseEntity<Page<Story>> showProductStories(@PathVariable("id") Integer id, Integer page, Integer size) {
-        userService.userAllowed(id);
+        //userService.userAllowed(id);
 
         Subject subject = SecurityUtils.getSubject();
         UserDto user = (UserDto) subject.getPrincipal();
@@ -133,7 +134,7 @@ public class StoryController {
 
     @GetMapping("Story")
     public ResponseEntity<StoryDetailVO> showStoryInfo(Integer productId, Integer storyId, Integer edition){
-        userService.userAllowed(productId);
+        //userService.userAllowed(productId);
 
         StoryUPK storyUPK = new StoryUPK(productId, storyId, edition);
         StoryDetailVO storyDetailVO = storyService.getStoryInfo(storyUPK);
@@ -142,7 +143,7 @@ public class StoryController {
 
     @PostMapping("history")
     public ResponseEntity<List<Story>> showStoryHistory(@RequestBody StoryUPK storyUPK){
-        userService.userAllowed(storyUPK.getProductId());
+        //userService.userAllowed(storyUPK.getProductId());
 
         List<Story> stories = storyService.getStoryHistory(storyUPK);
         return ResponseEntity.ok(stories);
@@ -150,7 +151,7 @@ public class StoryController {
 
     @DeleteMapping("deleteStory")
     public ResponseEntity<Integer> deleteStory(@RequestBody StoryUPK storyUPK){
-        userService.userAllowed(storyUPK.getProductId());
+        //userService.userAllowed(storyUPK.getProductId());
 
         Integer res = storyService.deleteStory(storyUPK);
         return ResponseEntity.ok(res);
@@ -164,15 +165,17 @@ public class StoryController {
     }
 
     @GetMapping("customerList")
-    public ResponseEntity<List> getCustomers() {
-        List<Customer> customerList = customerService.getCustomers();
-        return ResponseEntity.ok(customerList);
+    public ResponseEntity<CustomerListDTO> getCustomers(Integer productId) {
+
+        CustomerListDTO customerListDTO = storyService.getCustomers(productId);
+
+        return ResponseEntity.ok(customerListDTO);
     }
 
 
     @GetMapping("download")
     public ResponseEntity<FileSystemResource> download(Integer productId, HttpServletResponse response) {
-        userService.userAllowed(productId);
+        //userService.userAllowed(productId);
         //response.setContentType("application/csv");
         //response.setHeader("Content-Disposition","attachment;filename=writeCSV.csv");
         Subject subject = SecurityUtils.getSubject();
