@@ -1,5 +1,6 @@
 package fscut.manager.demo.dao;
 
+import fscut.manager.demo.entity.Customer;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import org.springframework.data.domain.Page;
@@ -49,6 +50,7 @@ public interface StoryRepository extends JpaRepository<Story, StoryUPK> {
     @Query(value = "select * from story where product_id = :#{#storyUPK.productId} and " +
             "story_id = :#{#storyUPK.storyId} and edition = :#{#storyUPK.edition}", nativeQuery = true)
     Story findStoryByEdition(@Param("storyUPK") StoryUPK storyUPK);
+
 
 
     /**
