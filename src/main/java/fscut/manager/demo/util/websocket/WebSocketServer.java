@@ -28,10 +28,8 @@ public class WebSocketServer {
     public void onOpen(Session session, @PathParam("token") String token) {
         this.session = session;
         this.username = JwtUtils.getUsername(token);
-        if (username != null) {
-            webSocketMap.put(username, this);
-        }
-        log.info(username + " has login,有新的连接，总数：{}", webSocketMap.size());
+        webSocketMap.put(username, this);
+        log.info(username + " has login,有新的连接，总数：{}, 用户{}已登录", webSocketMap.size(), username);
     }
 
     @OnClose
@@ -39,7 +37,7 @@ public class WebSocketServer {
         if (username != null) {
             webSocketMap.remove(username);
         }
-        log.info("连接断开，总数：{}", webSocketMap.size());
+        log.info("连接断开，总数：{}, 用户{}已断开", webSocketMap.size(), username);
     }
 
     @OnMessage
@@ -60,8 +58,7 @@ public class WebSocketServer {
         }
     }
 
-    public static void sendInfo(Object message, String username) {
-        System.out.println(username);
+    public void sendInfo(Object message, String username) {
         webSocketMap.get(username).sendMessage(message);
         log.info("向{}发送了消息：{}", username, message);
     }

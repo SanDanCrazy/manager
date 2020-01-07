@@ -2,17 +2,20 @@ package fscut.manager.demo.service.serviceimpl;
 
 import fscut.manager.demo.dao.CustomerRepository;
 import fscut.manager.demo.dao.CustomerRoleRepository;
+import fscut.manager.demo.dto.CustomerDTO;
 import fscut.manager.demo.entity.Customer;
 import fscut.manager.demo.entity.CustomerRole;
 import fscut.manager.demo.exception.CustomerAlreadyExitsException;
 import fscut.manager.demo.exception.CustomerNotExitsException;
 import fscut.manager.demo.service.CustomerService;
 import fscut.manager.demo.vo.CustomerAuthVO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -28,7 +31,7 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerRole customerRole = new CustomerRole();
 
         customerRole.getCustomerRoleUPK().setProductId(customerAuthVO.getProductId());
-        customerRole.getCustomerRoleUPK().setCustomerId(customerRepository.getIdByRealName(customerAuthVO.getRealName()));
+        customerRole.getCustomerRoleUPK().setCustomerId(customerRepository.getIdByRealName(customerAuthVO.getUsername()));
         customerRole.getCustomerRoleUPK().setRoleId(customerRoleRepository.getRoleIdByRoleName(customerAuthVO.getRoleName()));
         customerRoleRepository.save(customerRole);
     }
@@ -44,18 +47,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void deleteFromProduct(Integer customerId, Integer productId){
-        customerRoleRepository.deleteFromProduct(customerId, productId);
-    }
-
-    @Override
-    public Customer addCustomer(Customer customer) throws CustomerAlreadyExitsException{
-        customer.setProductId(0);
-        if(customerRepository.findCustomerByUsername(customer.getUsername()) != null) {
-            throw new CustomerAlreadyExitsException("customer exits");
-        }
-
-        return customerRepository.save(customer);
+    public Integer deleteFromProduct(Integer customerId, Integer productId){
+        Integer res = customerRoleRepository.deleteFromProduct(customerId, productId);
+        return res;
     }
 
     @Override
@@ -100,9 +94,39 @@ public class CustomerServiceImpl implements CustomerService {
     public Integer getIdByUsername(String username) {
         return customerRepository.getIdByUsername(username);
     }
+
     @Override
     public List getCustomers() {
         return customerRepository.findIdAndRealName();
+    }
+
+    @Override
+    public String getRoleCodeByUserId(Integer userId) {
+        return customerRepository.findRoleCodeByUserId(userId);
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public Optional<Customer> createCustomer(CustomerDTO customerDTO) throws CustomerAlreadyExitsException {
+        if(customerRepository.findCustomerByUsername(customerDTO.getUsername()) != null) {
+            throw new CustomerAlreadyExitsException("customer exits");
+        }
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(customerDTO, customer);
+        Customer newCustomer = customerRepository.save(customer);
+        return customerRepository.findById(newCustomer.getId());
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public CustomerRole updateCustomer(CustomerAuthVO customerAuthVO) {
+        customerRepository.updateCustomerPassword(customerAuthVO.getPassword(), customerRepository.getIdByUsername(customerAuthVO.getUsername()));
+        CustomerRole customerRole = new CustomerRole();
+
+        customerRole.getCustomerRoleUPK().setProductId(customerAuthVO.getProductId());
+        customerRole.getCustomerRoleUPK().setCustomerId(customerRepository.getIdByUsername(customerAuthVO.getUsername()));
+        customerRole.getCustomerRoleUPK().setRoleId(customerRoleRepository.getRoleIdByRoleName(customerAuthVO.getRoleName()));
+        return customerRoleRepository.save(customerRole);
     }
 
 }

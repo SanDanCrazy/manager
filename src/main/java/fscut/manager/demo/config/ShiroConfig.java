@@ -71,7 +71,7 @@ public class ShiroConfig {
     @Bean
     public static DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator(){
         DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
-        defaultAdvisorAutoProxyCreator.setProxyTargetClass(true); //important
+        defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
         return defaultAdvisorAutoProxyCreator;
     }
 
@@ -113,9 +113,9 @@ public class ShiroConfig {
     protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
         chainDefinition.addPathDefinition("/login", "noSessionCreation,anon");
-        chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken[permissive]");
+        chainDefinition.addPathDefinition("/logout", "noSessionCreation,anon");
         chainDefinition.addPathDefinition("/image/**", "anon");
-        chainDefinition.addPathDefinition("/customer/**", "noSessionCreation,authcToken,anyRole[admin,manager]"); //只允许admin或manager角色的用户访问
+        chainDefinition.addPathDefinition("/customer/**", "noSessionCreation,authcToken,anyRole[partner,admin,manager]");
         chainDefinition.addPathDefinition("/story/**", "noSessionCreation,authcToken,anyRole[partner,manager,admin]");
         chainDefinition.addPathDefinition("/product/**", "noSessionCreation,authcToken,anyRole[manager,admin]");
         chainDefinition.addPathDefinition("/message/**", "noSessionCreation,authcToken,anyRole[manager,partner,admin]");
@@ -123,11 +123,11 @@ public class ShiroConfig {
         return chainDefinition;
     }
 
-    protected JwtAuthFilter createAuthFilter(UserService userService){
+    private JwtAuthFilter createAuthFilter(UserService userService){
         return new JwtAuthFilter(userService);
     }
 
-    protected AnyRolesAuthFilter createAnyRolesAuthFilter(){
+    private AnyRolesAuthFilter createAnyRolesAuthFilter(){
         return new AnyRolesAuthFilter();
     }
 

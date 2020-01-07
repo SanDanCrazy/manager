@@ -5,9 +5,11 @@ import lombok.Data;
 @Data
 public class CustomerAuthVO {
 
+    private String password;
+
     private Integer productId;
 
-    private String realName;
+    private String username;
 
     private String roleName;
 }

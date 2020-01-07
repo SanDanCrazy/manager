@@ -41,6 +41,9 @@ public interface CustomerRepository extends JpaRepository<Customer,Integer>{
     @Query(value = "select DISTINCT role_code from customer_role as cr left join role on cr.role_id = role.id where customer_id = ?1", nativeQuery = true)
     List<String> findRolesByCustomerId(Integer userId);
 
+    @Query(value = "select DISTINCT role_code from customer_role as cr left join role on cr.role_id = role.id where customer_id = ?1", nativeQuery = true)
+    String findRoleCodeByUserId(Integer userId);
+
     @Modifying
     @Transactional
     @Query(value = "delete from customer where username = ?1", nativeQuery = true)
@@ -58,5 +61,9 @@ public interface CustomerRepository extends JpaRepository<Customer,Integer>{
      */
     @Query(value = "select id,realname from customer", nativeQuery = true)
     List findIdAndRealName();
+
+    @Modifying
+    @Query(value = "update customer set password = ?1 where id = ?2", nativeQuery = true)
+    Integer updateCustomerPassword(String password, Integer customerId);
 
 }
