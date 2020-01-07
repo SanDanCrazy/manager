@@ -75,7 +75,9 @@ public class LoginController {
 
     @GetMapping("list")
     public ResponseEntity<List<Product>> showProductList() {
-        List<Product> products = productService.showProductList();
+        Subject subject = SecurityUtils.getSubject();
+        UserDto userDto = (UserDto) subject.getPrincipal();
+        List<Product> products = productService.showProductList(userDto.getUserId());
         return ResponseEntity.ok(products);
     }
 }

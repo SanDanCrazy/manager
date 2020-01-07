@@ -16,8 +16,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
 
     @Override
-    public List<Product> showProductList() {
-        List<Product> productList = productRepository.findAll();
+    public List<Product> showProductList(Integer customerId) {
+        List<Product> productList = productRepository.findProductByCustomerId(customerId);
         return productList;
     }
 
