@@ -1,6 +1,7 @@
 package fscut.manager.demo.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import fscut.manager.demo.dto.CustomerDTO;
 import fscut.manager.demo.entity.Customer;
 import fscut.manager.demo.entity.CustomerRole;
 import fscut.manager.demo.exception.CustomerAlreadyExitsException;
@@ -13,22 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
 @RequestMapping("customer")
 public class CustomerController {
 
-    @Autowired
+    @Resource
     private CustomerService customerService;
-
-    @PostMapping("addCustomer")
-    @RequiresRoles("admin")
-    public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer) throws CustomerAlreadyExitsException {
-        Customer result = customerService.addCustomer(customer);
-        return ResponseEntity.ok(result);
-    }
 
     @DeleteMapping("deleteCustomer")
     @RequiresRoles("admin")
@@ -77,9 +73,30 @@ public class CustomerController {
 
     @DeleteMapping("deleteFromProduct")
     @RequiresRoles("manager")
-    public ResponseEntity<Void> deleteFromProduct(Integer customerId, Integer productId){
-        customerService.deleteFromProduct(customerId,productId);
-        return ResponseEntity.ok(null);
+    public ResponseEntity<Integer> deleteFromProduct(Integer customerId, Integer productId){
+        Integer res = customerService.deleteFromProduct(customerId, productId);
+        return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("createCustomer")
+    @RequiresRoles("admin")
+    public ResponseEntity createCustomer(@RequestBody CustomerDTO customerDTO) throws CustomerAlreadyExitsException {
+        Optional<Customer> optional = customerService.createCustomer(customerDTO);
+        Customer customer = null;
+        if (optional.isPresent()) {
+            customer = optional.get();
+        }
+        if (customer == null) {
+            return ResponseEntity.ok("为空！");
+        }
+        return ResponseEntity.ok(customer);
+    }
+
+    @PostMapping("updateCustomer")
+    @RequiresRoles("admin")
+    public ResponseEntity<CustomerRole> updateCustomer(@RequestBody CustomerAuthVO customerAuthVO) {
+        CustomerRole customerRole = customerService.updateCustomer(customerAuthVO);
+        return ResponseEntity.ok(customerRole);
     }
 
 

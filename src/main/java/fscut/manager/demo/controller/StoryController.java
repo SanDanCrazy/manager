@@ -1,6 +1,7 @@
 package fscut.manager.demo.controller;
 
-import fscut.manager.demo.dto.StoryDetailDTO;
+import com.fasterxml.jackson.annotation.JsonView;
+import fscut.manager.demo.dto.CustomerListDTO;
 import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Customer;
 import fscut.manager.demo.entity.Message;
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +52,9 @@ public class StoryController {
 
     @Resource
     private MessageService messageService;
+
+    @Resource
+    private WebSocketServer webSocketServer;
 
     @PostMapping("newStory")
     public ResponseEntity newStory(@RequestBody StoryVO storyVO){
@@ -73,13 +79,13 @@ public class StoryController {
         Integer testId = newStory.getTestId();
 
         if (designId != null) {
-            WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(designId));
+            webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(designId));
         }
         if (devId != null) {
-            WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(devId));
+            webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(devId));
         }
         if (testId != null) {
-            WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(testId));
+            webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(testId));
         }
 
         return ResponseEntity.ok(newStory);
@@ -106,15 +112,14 @@ public class StoryController {
         Integer devId = updatedStory.getDevId();
         Integer testId = updatedStory.getTestId();
         if (designId != null) {
-            WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(designId));
+            webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(designId));
         }
         if (devId != null) {
-            WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(devId));
+            webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(devId));
         }
         if (testId != null) {
-            WebSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(testId));
+            webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(testId));
         }
-
 
         return ResponseEntity.ok(updatedStory);
     }
@@ -125,7 +130,8 @@ public class StoryController {
 
         Subject subject = SecurityUtils.getSubject();
         UserDto user = (UserDto) subject.getPrincipal();
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.DESC, "putTime");
+        Sort.Direction sort = Sort.Direction.DESC;
+        PageRequest pageRequest = PageRequest.of(page, size, sort, "putTime");
         Page<Story> storyPage = storyService.getStoriesByProductId(id, user.getUserId(), pageRequest);
 
         return ResponseEntity.ok(storyPage);
@@ -157,29 +163,44 @@ public class StoryController {
     }
 
     @PostMapping("selectStory")
-    public ResponseEntity selectStory(Integer productId, String startTime, String endTime, String origin, String userInput, Integer page, Integer size)  {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.DESC, "putTime");
+    public ResponseEntity<Page<Story>> selectStory(Integer productId, String startTime, String endTime, String origin, String userInput, Integer page, Integer size, String sortByPutTime) {
+        Sort.Direction sort = Sort.Direction.DESC;
+        String desc = "descending";
+        String asc = "ascending";
+        if (desc.equals(sortByPutTime)) {
+            sort = Sort.Direction.DESC;
+        }
+        else if (asc.equals(sortByPutTime)) {
+            sort = Sort.Direction.ASC;
+        }
+        PageRequest pageRequest = PageRequest.of(page, size, sort, "putTime");
         Page<Story> stories = storyService.selectStory(productId, startTime, endTime, origin, userInput, pageRequest);
         return ResponseEntity.ok(stories);
     }
 
-    @GetMapping("customerList")
-    public ResponseEntity<List> getCustomers() {
-        List<Customer> customerList = customerService.getCustomers();
-        return ResponseEntity.ok(customerList);
+    @GetMapping("findStory")
+    public ResponseEntity<List<Story>> findStoryById(Integer productId, Integer storyId) {
+        List<Story> storyList = storyService.getStoryByStoryId(productId, storyId);
+        return ResponseEntity.ok(storyList);
     }
 
+    @JsonView(Customer.SimpleView.class)
+    @GetMapping("customerList")
+    public ResponseEntity<CustomerListDTO> getCustomers(Integer productId) {
+
+        CustomerListDTO customerListDTO = storyService.getCustomers(productId);
+
+        return ResponseEntity.ok(customerListDTO);
+    }
 
     @GetMapping("download")
-    public ResponseEntity<FileSystemResource> download(Integer productId, HttpServletResponse response) {
+    public ResponseEntity<FileSystemResource> download(Integer productId, HttpServletResponse response) throws UnsupportedEncodingException {
         userService.userAllowed(productId);
-        //response.setContentType("application/csv");
-        //response.setHeader("Content-Disposition","attachment;filename=writeCSV.csv");
         Subject subject = SecurityUtils.getSubject();
         UserDto user = (UserDto) subject.getPrincipal();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("Content-Disposition", "attachment; filename=" + "writeCSV.csv");
+        headers.add("Content-Disposition", "attachment; filename=" + URLEncoder.encode("writeCSV.csv", "UTF-8"));
         headers.add("Pragma", "no-cache");
         headers.add("Expires", "0");
         headers.add("Last-Modified", new Date().toString());
@@ -187,9 +208,6 @@ public class StoryController {
 
         CsvUtils.download(storyService.getStoriesByProductId(productId, user.getUserId()), response);
         File file = new File("D:\\writeCSV.csv");
-        if (file == null) {
-            return null;
-        }
         return ResponseEntity.ok().headers(headers).contentLength(file.length()).
                 contentType(MediaType.parseMediaType("application/octet-stream")).
                 body(new FileSystemResource(file));

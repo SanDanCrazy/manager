@@ -1,6 +1,6 @@
 package fscut.manager.demo.service;
 
-import fscut.manager.demo.dto.StoryDetailDTO;
+import fscut.manager.demo.dto.CustomerListDTO;
 import fscut.manager.demo.entity.Story;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import fscut.manager.demo.vo.StoryDetailVO;
@@ -24,6 +24,8 @@ public interface StoryService {
 
     List<Story> getStoriesByEditions(List<StoryUPK> storyUPKS);
 
+    Page<Story> getStoriesByEditions(List<StoryUPK> storyUPKS, Pageable pageable);
+
     List<Story> getStoryHistory(StoryUPK storyUPK);
 
     StoryUPK getNewStoryUPK(Integer productId);
@@ -36,6 +38,7 @@ public interface StoryService {
 
     Story convertStoryVO2Story(StoryVO storyVO);
 
+    CustomerListDTO getCustomers(Integer productId);
 
     /**
      * 需求名称模糊查询
@@ -60,4 +63,12 @@ public interface StoryService {
      * @return 需求分页
      */
     Page<Story> selectStory(Integer productId, String startTime, String endTime, String origin, String input, Pageable pageable);
+
+    /**
+     * 根据产品id和需求id查找需求
+     * @param productId 产品id
+     * @param storyId 需求id
+     * @return 需求
+     */
+    List<Story> getStoryByStoryId(Integer productId, Integer storyId);
 }

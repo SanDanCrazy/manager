@@ -2,6 +2,7 @@ package fscut.manager.demo.controller;
 
 import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Product;
+import fscut.manager.demo.service.CustomerService;
 import fscut.manager.demo.service.MessageService;
 import fscut.manager.demo.service.ProductService;
 import fscut.manager.demo.service.serviceimpl.UserService;
@@ -12,7 +13,6 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,13 +36,16 @@ public class LoginController {
     private MessageService messageService;
 
     @Resource
-    private RedisTemplate redisTemplate;
-
-    @Resource
     private ProductService productService;
 
+    @Resource
+    private CustomerService customerService;
+
+    @Resource
+    private WebSocketServer webSocketServer;
+
     @PostMapping(value = "/login")
-    public ResponseEntity<Void> login(@RequestBody UserDto loginInfo, HttpServletResponse response) {
+    public ResponseEntity<String> login(@RequestBody UserDto loginInfo, HttpServletResponse response) {
         Subject subject = SecurityUtils.getSubject();
         try {
             UsernamePasswordToken token = new UsernamePasswordToken(loginInfo.getUsername(), loginInfo.getPassword());
@@ -52,7 +55,13 @@ public class LoginController {
             String newToken = userService.generateJwtToken(user.getUsername());
             response.setHeader("token", newToken);
 
-            return ResponseEntity.ok().build();
+            Integer unreadMessageNum = messageService.getUnreadMessageNum(user.getUsername());
+            if (unreadMessageNum != 0) {
+                //webSocketServer.sendInfo("您共有" + unreadMessageNum + "条消息未读", user.getUsername());
+            }
+            Integer userId = customerService.getIdByUsername(user.getUsername());
+            String roleCode = customerService.getRoleCodeByUserId(userId);
+            return ResponseEntity.ok(roleCode);
         } catch (AuthenticationException e) {
             logger.error("User {} login fail, Reason:{}", loginInfo.getUsername(), e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
