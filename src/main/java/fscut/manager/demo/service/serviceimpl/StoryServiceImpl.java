@@ -91,6 +91,7 @@ public class StoryServiceImpl implements StoryService {
             Optional<Story> story = storyRepository.findById(newStoryUPK);
             StoryDetailVO result = new StoryDetailVO();
             result.setStory(story.get());
+            result.setEditable(true);
             return result;
         }
 
@@ -117,7 +118,10 @@ public class StoryServiceImpl implements StoryService {
         }
 
 
-        StoryDetailVO result = new StoryDetailVO(productId, storyId);
+        StoryDetailVO result = new StoryDetailVO(productId, storyId, false);
+        if(newStoryUPK.getEdition().equals(storyUPK.getEdition())){
+            result.setEditable(true);
+        }
         Optional<Story> story = storyRepository.findById(newStoryUPK);
         result.setStory(story.get());
         StoryDetailVO.OneTimeDetail[] oneTimeDetailsArray = new StoryDetailVO.OneTimeDetail[oneTimeDetailsNum];
