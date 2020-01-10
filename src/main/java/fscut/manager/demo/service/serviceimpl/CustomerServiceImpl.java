@@ -10,35 +10,31 @@ import fscut.manager.demo.exception.CustomerNotExitsException;
 import fscut.manager.demo.service.CustomerService;
 import fscut.manager.demo.vo.CustomerAuthVO;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-    @Autowired
+    @Resource
     private CustomerRoleRepository customerRoleRepository;
 
-    @Autowired
+    @Resource
     private CustomerRepository customerRepository;
 
     @Override
-    public void addToProduct(CustomerAuthVO customerAuthVO){
+    public CustomerRole addToProduct(CustomerAuthVO customerAuthVO){
         CustomerRole customerRole = new CustomerRole();
 
         customerRole.getCustomerRoleUPK().setProductId(customerAuthVO.getProductId());
-        customerRole.getCustomerRoleUPK().setCustomerId(customerRepository.getIdByRealName(customerAuthVO.getUsername()));
+        customerRole.getCustomerRoleUPK().setCustomerId(customerRepository.getIdByUsername(customerAuthVO.getUsername()));
         customerRole.getCustomerRoleUPK().setRoleId(customerRoleRepository.getRoleIdByRoleName(customerAuthVO.getRoleName()));
-        customerRoleRepository.save(customerRole);
-    }
-
-    @Override
-    public List<Customer> getCustomerList(){
-        return customerRepository.findAll();
+        return customerRoleRepository.save(customerRole);
     }
 
     @Override
@@ -48,8 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Integer deleteFromProduct(Integer customerId, Integer productId){
-        Integer res = customerRoleRepository.deleteFromProduct(customerId, productId);
-        return res;
+        return customerRoleRepository.deleteFromProduct(customerId, productId);
     }
 
     @Override
@@ -65,13 +60,13 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void assignRole(CustomerRole customerRole){
-        customerRoleRepository.save(customerRole);
+    public void deleteRole(CustomerRole customerRole){
+        customerRoleRepository.delete(customerRole);
     }
 
     @Override
-    public void deleteRole(CustomerRole customerRole){
-        customerRoleRepository.delete(customerRole);
+    public void assignRole(CustomerRole customerRole){
+        customerRoleRepository.save(customerRole);
     }
 
     @Override
@@ -96,8 +91,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List getCustomers() {
-        return customerRepository.findIdAndRealName();
+    public List<Customer> getCustomers() {
+        return customerRepository.findAll();
     }
 
     @Override
@@ -118,15 +113,27 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
-    public CustomerRole updateCustomer(CustomerAuthVO customerAuthVO) {
-        customerRepository.updateCustomerPassword(customerAuthVO.getPassword(), customerRepository.getIdByUsername(customerAuthVO.getUsername()));
-        CustomerRole customerRole = new CustomerRole();
+    public Integer updateCustomer(String password, String username) {
+        Integer userId = customerRepository.getIdByUsername(username);
+        return customerRepository.updateCustomerPassword(password, userId);
+    }
 
-        customerRole.getCustomerRoleUPK().setProductId(customerAuthVO.getProductId());
-        customerRole.getCustomerRoleUPK().setCustomerId(customerRepository.getIdByUsername(customerAuthVO.getUsername()));
-        customerRole.getCustomerRoleUPK().setRoleId(customerRoleRepository.getRoleIdByRoleName(customerAuthVO.getRoleName()));
-        return customerRoleRepository.save(customerRole);
+    @Override
+    public List<String> getAdmins() {
+        List<String> adminList = new ArrayList<>();
+        List<Integer> adminIds = customerRoleRepository.findAllAdmins();
+        for (Integer adminId : adminIds) {
+            adminList.add(customerRepository.getUsernameById(adminId));
+        }
+        return adminList;
+    }
+
+    @Override
+    public Integer updateCustomerRole(CustomerAuthVO customerAuthVO) {
+        Integer productId = customerAuthVO.getProductId();
+        Integer roleId = customerRoleRepository.getRoleIdByRoleName(customerAuthVO.getRoleName());
+        Integer customerId = customerRepository.getIdByUsername(customerAuthVO.getUsername());
+        return customerRoleRepository.updateCustomerRole(roleId, customerId, productId);
     }
 
 }

@@ -6,15 +6,42 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import fscut.manager.demo.enums.StoryStatusEnum;
-import lombok.Data;
+
+import org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory;
+import org.apache.lucene.analysis.core.StopFilterFactory;
+import org.apache.lucene.analysis.ngram.NGramTokenizerFactory;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.CharFilterDef;
+import org.hibernate.search.annotations.TokenFilterDef;
+import org.hibernate.search.annotations.TokenizerDef;
+//import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.annotations.*;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Parameter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
 
 @Entity
-@Table(name = "story")
+@Indexed(index = "story")
+//@AnalyzerDef(name = "customAnalyzer",
+//        tokenizer = @TokenizerDef(factory = NGramTokenizerFactory.class, params = {
+//                @org.hibernate.search.annotations.Parameter(name = "minGramSize", value = "1"),
+//                @Parameter(name = "maxGramSize", value = "40")
+//        }),
+//        filters = {
+//                @TokenFilterDef(factory = StopFilterFactory.class, params = {
+//                        @Parameter(name = "words", value = "org/apache/lucene/analysis/cn/smart/stopwords.txt"),
+//                        @Parameter(name = "ignoreCase", value = "true")
+//                })
+//        },
+//        charFilters = {
+//                @CharFilterDef(factory = HTMLStripCharFilterFactory.class)
+//        }
+//)
+//@Table(name = "story")
 @DynamicUpdate
 @JsonInclude(Include.NON_NULL)
 public class Story implements Serializable {
@@ -29,7 +56,7 @@ public class Story implements Serializable {
     @Column(name = "origin")
     private String origin;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @Column(name = "put_time", nullable = false)
     private Date putTime;
 
@@ -40,9 +67,11 @@ public class Story implements Serializable {
     private Integer storyStatus = StoryStatusEnum.NEW.getCode();
 
     @Column(name = "description")
+    //@Field
     private String description;
 
     @Column(name = "conclusion")
+    //@Field
     private String conclusion;
 
     @Column(name = "design_id")
@@ -66,6 +95,7 @@ public class Story implements Serializable {
     private java.util.Date updateTime;
 
     public Story() {
+        // do nothing because of constructor method
     }
 
     @JsonView({Story.StoryListSimpleView.class})
@@ -89,7 +119,7 @@ public class Story implements Serializable {
         return putTime;
     }
 
-    //@JsonView({Story.StoryListSimpleView.class})
+    @JsonView({Story.StoryListSimpleView.class})
     public void setPutTime(Date putTime) {
         this.putTime = putTime;
     }

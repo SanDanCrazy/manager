@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -42,5 +43,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Integer findLastedProductId();
 
     @Query("select new fscut.manager.demo.entity.Product(p.id, p.productName) from Product p, CustomerRole cr where p.id = cr.customerRoleUPK.productId and cr.customerRoleUPK.customerId = :customerId")
-    List<Product> findProductByCustomerId(Integer customerId);
+    List<Product> findProductByCustomerId(@Param("customerId") Integer customerId);
 }

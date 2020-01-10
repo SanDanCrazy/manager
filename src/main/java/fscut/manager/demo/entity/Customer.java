@@ -14,10 +14,11 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(SimpleView.class)
     @Column(name = "id")
+    @JsonView(SimpleView.class)
     private Integer id;
 
+    @JsonView(SimpleView.class)
     @Column(name = "username", nullable = false)
     private String username;
 

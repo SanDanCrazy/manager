@@ -6,16 +6,13 @@ import fscut.manager.demo.entity.CustomerRole;
 import fscut.manager.demo.exception.CustomerAlreadyExitsException;
 import fscut.manager.demo.exception.CustomerNotExitsException;
 import fscut.manager.demo.vo.CustomerAuthVO;
-import org.apache.catalina.User;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CustomerService {
 
-    void addToProduct(CustomerAuthVO customerAuthVO);
-
-    List<Customer> getCustomerList();
+    CustomerRole addToProduct(CustomerAuthVO customerAuthVO);
 
     List<Customer> getCustomerListByProductId(Integer productId);
 
@@ -39,5 +36,9 @@ public interface CustomerService {
 
     Optional<Customer> createCustomer(CustomerDTO customerDTO) throws CustomerAlreadyExitsException;
 
-    CustomerRole updateCustomer(CustomerAuthVO customerAuthVO);
+    Integer updateCustomer(String password, String username);
+
+    List<String> getAdmins();
+
+    Integer updateCustomerRole(CustomerAuthVO customerAuthVO);
 }

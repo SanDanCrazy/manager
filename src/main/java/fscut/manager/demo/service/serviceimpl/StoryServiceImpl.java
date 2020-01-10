@@ -16,8 +16,13 @@ import fscut.manager.demo.enums.StoryStatusEnum;
 import fscut.manager.demo.service.StoryService;
 import fscut.manager.demo.vo.StoryDetailVO;
 import fscut.manager.demo.vo.StoryVO;
+import org.apache.lucene.search.Query;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+//import org.hibernate.search.jpa.FullTextEntityManager;
+//import org.hibernate.search.jpa.FullTextQuery;
+//import org.hibernate.search.jpa.Search;
+//import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,6 +31,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
@@ -48,6 +56,8 @@ public class StoryServiceImpl implements StoryService {
 
     @Resource
     private StoryDetailRepository storyDetailRepository;
+
+    private EntityManagerFactory entityManagerFactory;
 
     @Override
     @Transactional(rollbackOn = Exception.class)
@@ -85,10 +95,9 @@ public class StoryServiceImpl implements StoryService {
         Integer storyId = storyUPK.getStoryId();
 
         StoryUPK newStoryUPK = storyEditionRepository.findStoryEditionsByProductIdAndStoryId(productId,storyId).get(0);
-
         List<StoryDetail> storyDetails = storyDetailRepository.getStoryDetailsByProductIdAndStoryId(productId, storyId);
         if(storyDetails.size() == 0){
-            Optional<Story> story = storyRepository.findById(newStoryUPK);
+            Optional<Story> story = storyRepository.findById(storyUPK);
             StoryDetailVO result = new StoryDetailVO();
             result.setStory(story.get());
             result.setEditable(true);
@@ -119,10 +128,10 @@ public class StoryServiceImpl implements StoryService {
 
 
         StoryDetailVO result = new StoryDetailVO(productId, storyId, false);
-        if(newStoryUPK.getEdition().equals(storyUPK.getEdition())){
+        if(storyUPK.getEdition().equals(newStoryUPK.getEdition())){
             result.setEditable(true);
         }
-        Optional<Story> story = storyRepository.findById(newStoryUPK);
+        Optional<Story> story = storyRepository.findById(storyUPK);
         result.setStory(story.get());
         StoryDetailVO.OneTimeDetail[] oneTimeDetailsArray = new StoryDetailVO.OneTimeDetail[oneTimeDetailsNum];
         for(int i = 0, j =0; i < oneTimeDetailsNum; i++){
@@ -184,7 +193,7 @@ public class StoryServiceImpl implements StoryService {
             result.setModified(customerRepository.findRealNameByCustomerId(newStory.getDevId()));
             storyDetailRepository.save(result);
         }
-        if (!compareInteger(newStory.getTestId(),lastStory.getTestId())) {
+        if (Boolean.FALSE.equals(compareString(newStory.getTestId(), lastStory.getTestId()))) {
             StoryDetail result = new StoryDetail();
             result.setProductId(newStory.getStoryUPK().getProductId());
             result.setStoryId(newStory.getStoryUPK().getStoryId());
@@ -217,7 +226,7 @@ public class StoryServiceImpl implements StoryService {
             result.setModified(newStory.getStoryName());
             storyDetailRepository.save(result);
         }
-        if (!newStory.getStoryStatus().equals(lastStory.getStoryStatus())) {
+        if (Boolean.FALSE.equals(compareString(newStory.getStoryStatus(), lastStory.getStoryStatus()))) {
             StoryDetail result = new StoryDetail();
             result.setProductId(newStory.getStoryUPK().getProductId());
             result.setStoryId(newStory.getStoryUPK().getStoryId());
@@ -225,7 +234,7 @@ public class StoryServiceImpl implements StoryService {
             result.setEditName(customerRepository.findRealNameByCustomerId(newStory.getEditId()));
             result.setAttribute("需求状态");
             result.setPrevious(StoryStatusEnum.getMessage(lastStory.getStoryStatus()));
-            result.setModified(StoryStatusEnum.getMessage(lastStory.getStoryStatus()));
+            result.setModified(StoryStatusEnum.getMessage(newStory.getStoryStatus()));
             storyDetailRepository.save(result);
         }
         if (Boolean.FALSE.equals(compareString(newStory.getTestTime(), lastStory.getTestTime()))) {
@@ -390,6 +399,11 @@ public class StoryServiceImpl implements StoryService {
 
     @Override
     public Page<Story> selectStory(Integer productId, String startTime, String endTime, String origin, String input, Pageable pageable) {
+        //EntityManager entityManager = entityManagerFactory.createEntityManager();
+        //FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+        //entityManager.getTransaction().begin();
+        //QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(Story.class).get();
+
         List<StoryUPK> storyUPKList = getStoryEditionsByProductId(productId);
         Specification<Story> predicate = (root, criteriaQuery, criteriaBuilder) -> {
             String putTime = "putTime";
@@ -407,12 +421,18 @@ public class StoryServiceImpl implements StoryService {
                 Predicate p1 = criteriaBuilder.like(root.get("storyName").as(String.class), "%" + input + "%");
                 Predicate p2 = criteriaBuilder.like(root.get("description").as(String.class), "%" + input + "%");
                 predicates.add(criteriaBuilder.or(p1, p2));
+                //Query query = queryBuilder.keyword().onFields("storyName", "description").matching(input).createQuery();
+                //javax.persistence.Query persistenceQuery = fullTextEntityManager.createFullTextQuery(query, Story.class);
+                //predicates.add((Predicate) persistenceQuery);
             }
             CriteriaBuilder.In<Object> in = criteriaBuilder.in(root.get("storyUPK"));
             in.value(storyUPKList);
             predicates.add(in);
             criteriaQuery.orderBy(criteriaBuilder.desc(root.get(putTime)));
             Predicate[] pre = new Predicate[predicates.size()];
+
+            //entityManager.getTransaction().commit();
+            //entityManager.close();
             return criteriaQuery.where(predicates.toArray(pre)).getRestriction();
         };
         return storyRepository.findAll(predicate, pageable);
