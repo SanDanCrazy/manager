@@ -53,29 +53,4 @@ public class WebConfiguration extends WebMvcConfigurationSupport{
 		registry.addResourceHandler("/picture/**").addResourceLocations("file:"+ path);
 	}
 
-	@Override
-	protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-		ObjectMapper mapper = new ObjectMapper() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			protected DefaultSerializerProvider _serializerProvider(SerializationConfig config) {
-				// replace the configuration with my modified configuration.
-				// calling "withView" should keep previous config and just add my changes.
-				return super._serializerProvider(config.withView(Story.StorySimpleView.class));
-			}
-		};
-		mapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
-		converter.setObjectMapper(mapper);
-		converters.add(converter);
-	}
-
-	//@Override
-	//protected void addInterceptors(InterceptorRegistry registry) {
-	//	registry.addInterceptor(new MyInterceptor()).addPathPatterns("/**").
-	//			excludePathPatterns("/emp/toLogin","/emp/login","/js/**","/css/**","/images/**");
-	//	super.addInterceptors(registry);
-	//}
-
-
 }

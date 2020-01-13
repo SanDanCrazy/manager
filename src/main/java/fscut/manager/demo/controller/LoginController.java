@@ -3,10 +3,8 @@ package fscut.manager.demo.controller;
 import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.entity.Product;
 import fscut.manager.demo.service.CustomerService;
-import fscut.manager.demo.service.MessageService;
 import fscut.manager.demo.service.ProductService;
 import fscut.manager.demo.service.serviceimpl.UserService;
-import fscut.manager.demo.util.websocket.WebSocketServer;
 import io.swagger.annotations.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -40,9 +38,6 @@ public class LoginController {
     @Resource
     private CustomerService customerService;
 
-    @Resource
-    private WebSocketServer webSocketServer;
-
     @ApiOperation(value = "用户登录",notes = "用户登录返回头里含有token")
     @PostMapping(value = "/login")
     public ResponseEntity<String> login(@RequestBody UserDto loginInfo, HttpServletResponse response) {
@@ -60,7 +55,7 @@ public class LoginController {
             return ResponseEntity.ok(roleCode);
         } catch (AuthenticationException e) {
             logger.error("User {} login fail, Reason:{}", loginInfo.getUsername(), e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
     }
 

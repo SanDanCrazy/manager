@@ -33,13 +33,21 @@ public class StoryUPK implements Serializable{
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         StoryUPK storyUPK = (StoryUPK) o;
 
-        if (!productId.equals(storyUPK.productId)) return false;
-        if (!storyId.equals(storyUPK.storyId)) return false;
+        if (!productId.equals(storyUPK.productId)) {
+            return false;
+        }
+        if (!storyId.equals(storyUPK.storyId)) {
+            return false;
+        }
         return edition.equals(storyUPK.edition);
     }
 

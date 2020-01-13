@@ -53,21 +53,6 @@ public class CustomerController {
         return ResponseEntity.ok(customerList);
     }
 
-
-    @RequiresRoles("admin")
-    @PostMapping("assignRole")
-    public ResponseEntity<Void> assignRole(@RequestBody CustomerRole customerRole){
-        customerService.assignRole(customerRole);
-        return ResponseEntity.ok(null);
-    }
-
-    @DeleteMapping("deleteRole")
-    @RequiresRoles("admin")
-    public ResponseEntity<Void> deleteRole(@RequestBody CustomerRole customerRole){
-        customerService.deleteRole(customerRole);
-        return ResponseEntity.ok(null);
-    }
-
     @PostMapping("addToProduct")
     @RequiresRoles(value={"admin","manager"}, logical = Logical.OR)
     public ResponseEntity addToProduct(@RequestBody CustomerAuthVO customerAuthVO) {
@@ -83,13 +68,6 @@ public class CustomerController {
             }
             return ResponseEntity.ok(res);
         }
-    }
-
-    @DeleteMapping("deleteFromProduct")
-    @RequiresRoles("manager")
-    public ResponseEntity<Integer> deleteFromProduct(Integer customerId, Integer productId){
-        Integer res = customerService.deleteFromProduct(customerId, productId);
-        return ResponseEntity.ok(res);
     }
 
     @PostMapping("createCustomer")
