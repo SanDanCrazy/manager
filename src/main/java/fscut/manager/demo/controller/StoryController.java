@@ -23,14 +23,18 @@ import org.springframework.data.domain.PageRequest;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
@@ -76,20 +80,7 @@ public class StoryController {
         }
 
         Message message = messageService.addCreateMessage(newStory);
-
-        Integer designId = newStory.getDesignId();
-        Integer devId = newStory.getDevId();
-        Integer testId = newStory.getTestId();
-
-        if (designId != null) {
-            webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(designId));
-        }
-        if (devId != null) {
-            webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(devId));
-        }
-        if (testId != null) {
-            webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(testId));
-        }
+        messageService.sendMessage(newStory, message);
 
         return ResponseEntity.ok(newStory);
     }
@@ -108,21 +99,8 @@ public class StoryController {
             return ResponseEntity.ok("为空！");
         }
 
-
         Message message = messageService.addUpdateMessage(updatedStory);
-
-        Integer designId = updatedStory.getDesignId();
-        Integer devId = updatedStory.getDevId();
-        Integer testId = updatedStory.getTestId();
-        if (designId != null) {
-            webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(designId));
-        }
-        if (devId != null) {
-            webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(devId));
-        }
-        if (testId != null) {
-            webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(testId));
-        }
+        messageService.sendMessage(updatedStory,message);
 
         return ResponseEntity.ok(updatedStory);
     }

@@ -103,7 +103,7 @@ public class StoryServiceImpl implements StoryService {
                 oneTimeDetailsNum++;
             }
         }
-        System.out.println(oneTimeDetailsNum);
+//        System.out.println(oneTimeDetailsNum);
         int[] contents = new int[oneTimeDetailsNum];
         for(int i = 0; i < oneTimeDetailsNum; i++){
             contents[i] = 0;
@@ -119,7 +119,7 @@ public class StoryServiceImpl implements StoryService {
 
 
         StoryDetailVO result = new StoryDetailVO(productId, storyId, false);
-        if(newStoryUPK.getEdition().equals(storyUPK.getEdition())){
+        if(storyUPK.getEdition().equals(newStoryUPK.getEdition())){
             result.setEditable(true);
         }
         Optional<Story> story = storyRepository.findById(newStoryUPK);
@@ -225,7 +225,7 @@ public class StoryServiceImpl implements StoryService {
             result.setEditName(customerRepository.findRealNameByCustomerId(newStory.getEditId()));
             result.setAttribute("需求状态");
             result.setPrevious(StoryStatusEnum.getMessage(lastStory.getStoryStatus()));
-            result.setModified(StoryStatusEnum.getMessage(lastStory.getStoryStatus()));
+            result.setModified(StoryStatusEnum.getMessage(newStory.getStoryStatus()));
             storyDetailRepository.save(result);
         }
         if (Boolean.FALSE.equals(compareString(newStory.getTestTime(), lastStory.getTestTime()))) {

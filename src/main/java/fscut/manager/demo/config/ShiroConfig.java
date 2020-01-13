@@ -113,7 +113,7 @@ public class ShiroConfig {
     protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
         chainDefinition.addPathDefinition("/login", "noSessionCreation,anon");
-        chainDefinition.addPathDefinition("/logout", "noSessionCreation,anon");
+        chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken,anon");
         chainDefinition.addPathDefinition("/list", "noSessionCreation,authcToken");
         chainDefinition.addPathDefinition("/image/**", "anon");
         chainDefinition.addPathDefinition("/customer/**", "noSessionCreation,authcToken,anyRole[partner,admin,manager]");
