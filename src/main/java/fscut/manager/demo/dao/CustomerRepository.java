@@ -13,6 +13,11 @@ import java.util.List;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer,Integer>{
 
+    /**
+     *
+     * @param realName
+     * @return
+     */
     @Query(value = "select id from customer where realname = ?1", nativeQuery = true)
     Integer getIdByRealName(String realName);
 

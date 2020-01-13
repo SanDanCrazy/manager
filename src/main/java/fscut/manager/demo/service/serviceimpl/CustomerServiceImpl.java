@@ -5,6 +5,7 @@ import fscut.manager.demo.dao.CustomerRoleRepository;
 import fscut.manager.demo.dto.CustomerDTO;
 import fscut.manager.demo.entity.Customer;
 import fscut.manager.demo.entity.CustomerRole;
+import fscut.manager.demo.entity.UPK.CustomerRoleUPK;
 import fscut.manager.demo.exception.CustomerAlreadyExitsException;
 import fscut.manager.demo.exception.CustomerNotExitsException;
 import fscut.manager.demo.service.CustomerService;
@@ -49,14 +50,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public void deleteCustomer(String username) throws CustomerNotExitsException{
+    public Integer deleteCustomer(String username) throws CustomerNotExitsException{
         if(customerRepository.findCustomerByUsername(username) == null) {
             throw new CustomerNotExitsException("customer not exits");
         }
 
         Integer customerId = customerRepository.getIdByUsername(username);
         customerRepository.deleteCustomerByUsername(username);
-        customerRoleRepository.deleteRoleByCustomerId(customerId);
+        return customerRoleRepository.deleteRoleByCustomerId(customerId);
     }
 
     @Override
@@ -134,6 +135,13 @@ public class CustomerServiceImpl implements CustomerService {
         Integer roleId = customerRoleRepository.getRoleIdByRoleName(customerAuthVO.getRoleName());
         Integer customerId = customerRepository.getIdByUsername(customerAuthVO.getUsername());
         return customerRoleRepository.updateCustomerRole(roleId, customerId, productId);
+    }
+
+    @Override
+    public CustomerRoleUPK getCustomerRoleByCusomerIdAndProductId(CustomerAuthVO customerAuthVO) {
+        Integer productId = customerAuthVO.getProductId();
+        Integer customerId = customerRepository.getIdByUsername(customerAuthVO.getUsername());
+        return customerRoleRepository.findByCustomerIdAndProductId(customerId, productId);
     }
 
 }

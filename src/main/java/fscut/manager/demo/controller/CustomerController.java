@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import fscut.manager.demo.dto.CustomerDTO;
 import fscut.manager.demo.entity.Customer;
 import fscut.manager.demo.entity.CustomerRole;
+import fscut.manager.demo.entity.UPK.CustomerRoleUPK;
 import fscut.manager.demo.exception.CustomerAlreadyExitsException;
 import fscut.manager.demo.exception.CustomerNotExitsException;
 import fscut.manager.demo.service.CustomerService;
@@ -28,9 +29,12 @@ public class CustomerController {
 
     @DeleteMapping("deleteCustomer")
     @RequiresRoles("admin")
-    public ResponseEntity<Void> deleteCustomer(String username) throws CustomerNotExitsException {
-        customerService.deleteCustomer(username);
-        return ResponseEntity.ok(null);
+    public ResponseEntity<Integer> deleteCustomer(String username) throws CustomerNotExitsException {
+        Integer res = customerService.deleteCustomer(username);
+        if (res != 1) {
+            return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(res);
     }
 
     @JsonView({Customer.SimpleView.class})
@@ -66,12 +70,19 @@ public class CustomerController {
 
     @PostMapping("addToProduct")
     @RequiresRoles(value={"admin","manager"}, logical = Logical.OR)
-    public ResponseEntity<Integer> addToProduct(@RequestBody CustomerAuthVO customerAuthVO){
-        Integer res = customerService.updateCustomerRole(customerAuthVO);
-        if (res != 1) {
-            return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+    public ResponseEntity addToProduct(@RequestBody CustomerAuthVO customerAuthVO) {
+        CustomerRoleUPK customerRoleUPK = customerService.getCustomerRoleByCusomerIdAndProductId(customerAuthVO);
+        if (customerRoleUPK == null) {
+            CustomerRole customerRole1 = customerService.addToProduct(customerAuthVO);
+            return ResponseEntity.ok(customerRole1);
         }
-        return ResponseEntity.ok(res);
+        else {
+            Integer res = customerService.updateCustomerRole(customerAuthVO);
+            if (res != 1) {
+                return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+            }
+            return ResponseEntity.ok(res);
+        }
     }
 
     @DeleteMapping("deleteFromProduct")

@@ -11,21 +11,21 @@ import org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.ngram.NGramTokenizerFactory;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.search.annotations.AnalyzerDef;
-import org.hibernate.search.annotations.CharFilterDef;
-import org.hibernate.search.annotations.TokenFilterDef;
-import org.hibernate.search.annotations.TokenizerDef;
-//import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import org.hibernate.search.annotations.*;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Parameter;
+//import org.hibernate.search.annotations.AnalyzerDef;
+//import org.hibernate.search.annotations.CharFilterDef;
+//import org.hibernate.search.annotations.TokenFilterDef;
+//import org.hibernate.search.annotations.TokenizerDef;
+////import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+//import org.hibernate.search.annotations.*;
+//import org.hibernate.search.annotations.Indexed;
+//import org.hibernate.search.annotations.Parameter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
 
 @Entity
-@Indexed(index = "story")
+//@Indexed(index = "story")
 //@AnalyzerDef(name = "customAnalyzer",
 //        tokenizer = @TokenizerDef(factory = NGramTokenizerFactory.class, params = {
 //                @org.hibernate.search.annotations.Parameter(name = "minGramSize", value = "1"),
