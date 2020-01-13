@@ -1,10 +1,20 @@
 package fscut.manager.demo.config;
 
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.ser.DefaultSerializerProvider;
+import fscut.manager.demo.entity.Customer;
+import fscut.manager.demo.entity.Story;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
 import org.springframework.web.servlet.config.annotation.*;
 
@@ -43,6 +53,22 @@ public class WebConfiguration extends WebMvcConfigurationSupport{
 		registry.addResourceHandler("/picture/**").addResourceLocations("file:"+ path);
 	}
 
+	@Override
+	protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+		ObjectMapper mapper = new ObjectMapper() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			protected DefaultSerializerProvider _serializerProvider(SerializationConfig config) {
+				// replace the configuration with my modified configuration.
+				// calling "withView" should keep previous config and just add my changes.
+				return super._serializerProvider(config.withView(Story.StorySimpleView.class));
+			}
+		};
+		mapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
+		converter.setObjectMapper(mapper);
+		converters.add(converter);
+	}
 
 	//@Override
 	//protected void addInterceptors(InterceptorRegistry registry) {

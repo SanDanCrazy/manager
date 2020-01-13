@@ -73,6 +73,7 @@ public class StoryController {
     @Resource
     private IpConfiguration ipConfiguration;
 
+    @JsonView(Story.StorySimpleView.class)
     @PostMapping("newStory")
     public ResponseEntity newStory(@RequestBody StoryVO storyVO){
         userService.userAllowed(storyVO.getStoryUPK().getProductId());
@@ -95,6 +96,7 @@ public class StoryController {
         return ResponseEntity.ok(newStory);
     }
 
+    @JsonView(Story.StorySimpleView.class)
     @PostMapping("editStory")
     public ResponseEntity editStory(@RequestBody StoryVO storyVO) {
         userService.userAllowed(storyVO.getStoryUPK().getProductId());
@@ -116,6 +118,7 @@ public class StoryController {
     }
 
     @ApiOperation(value = "获取产品所有需求",notes = "验证用户权限")
+    @JsonView(Story.StorySimpleView.class)
     @GetMapping("product/{id}")
     public ResponseEntity<Page<Story>> showProductStories(@PathVariable("id") Integer id, Integer page, Integer size) {
         userService.userAllowed(id);
@@ -138,8 +141,10 @@ public class StoryController {
         return ResponseEntity.ok(storyDetailVO);
     }
 
+    @JsonView(Story.StorySimpleView.class)
     @PostMapping("history")
     public ResponseEntity<List<Story>> showStoryHistory(@RequestBody StoryUPK storyUPK){
+        System.out.println(storyUPK);
         userService.userAllowed(storyUPK.getProductId());
 
         List<Story> stories = storyService.getStoryHistory(storyUPK);
@@ -149,11 +154,11 @@ public class StoryController {
     @DeleteMapping("deleteStory")
     public ResponseEntity<Integer> deleteStory(@RequestBody StoryUPK storyUPK){
         userService.userAllowed(storyUPK.getProductId());
-
         Integer res = storyService.deleteStory(storyUPK);
         return ResponseEntity.ok(res);
     }
 
+    @JsonView(Story.StorySimpleView.class)
     @PostMapping("selectStory")
     public ResponseEntity<Page<Story>> selectStory(Integer productId, String startTime, String endTime, String origin, String userInput, Integer page, Integer size, String sortByPutTime) {
         Sort.Direction sort = Sort.Direction.DESC;
@@ -170,6 +175,7 @@ public class StoryController {
         return ResponseEntity.ok(stories);
     }
 
+    @JsonView({Story.StorySimpleView.class})
     @GetMapping("findStory")
     public ResponseEntity<List<Story>> findStoryById(Integer productId, Integer storyId) {
         List<Story> storyList = storyService.getStoryByStoryId(productId, storyId);

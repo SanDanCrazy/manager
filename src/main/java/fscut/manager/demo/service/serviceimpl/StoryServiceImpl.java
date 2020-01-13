@@ -13,6 +13,7 @@ import fscut.manager.demo.entity.StoryEdition;
 import fscut.manager.demo.entity.UPK.StoryUPK;
 import fscut.manager.demo.enums.StoryStatusEnum;
 import fscut.manager.demo.service.StoryService;
+import fscut.manager.demo.util.CsvUtils;
 import fscut.manager.demo.vo.StoryDetailVO;
 import fscut.manager.demo.vo.StoryVO;
 import org.apache.shiro.SecurityUtils;
@@ -52,6 +53,8 @@ public class StoryServiceImpl implements StoryService {
     public Optional<Story> addStory(Story story) {
         StoryUPK storyUPK = getNewStoryUPK(story.getStoryUPK().getProductId());
         BeanUtils.copyProperties(storyUPK, story.getStoryUPK());
+        story.setConclusionStr(CsvUtils.removeHtmlTag(story.getConclusion()));
+        story.setDescriptionStr(CsvUtils.removeHtmlTag(story.getDescription()));
         storyRepository.save(story);
         StoryEdition storyEdition = new StoryEdition();
         BeanUtils.copyProperties(story, storyEdition);
@@ -66,6 +69,8 @@ public class StoryServiceImpl implements StoryService {
 
         int edition = story.getStoryUPK().getEdition() + 1;
         story.getStoryUPK().setEdition(edition);
+        story.setConclusionStr(CsvUtils.removeHtmlTag(story.getConclusion()));
+        story.setDescriptionStr(CsvUtils.removeHtmlTag(story.getDescription()));
         story = storyRepository.save(story);
 
         getDifferenceBetween2Stories(story, lastStory);
@@ -405,8 +410,9 @@ public class StoryServiceImpl implements StoryService {
             }
             if (input != null) {
                 Predicate p1 = criteriaBuilder.like(root.get("storyName").as(String.class), "%" + input + "%");
-                Predicate p2 = criteriaBuilder.like(root.get("description").as(String.class), "%" + input + "%");
-                predicates.add(criteriaBuilder.or(p1, p2));
+                Predicate p2 = criteriaBuilder.like(root.get("descriptionStr").as(String.class), "%" + input + "%");
+                Predicate p3 = criteriaBuilder.like(root.get("conclusionStr").as(String.class), "%" + input + "%");
+                predicates.add(criteriaBuilder.or(p1, p2, p3));
             }
             CriteriaBuilder.In<Object> in = criteriaBuilder.in(root.get("storyUPK"));
             in.value(storyUPKList);

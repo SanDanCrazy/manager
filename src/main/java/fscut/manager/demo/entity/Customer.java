@@ -1,5 +1,6 @@
 package fscut.manager.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
@@ -22,6 +23,7 @@ public class Customer {
     @Column(name = "username", nullable = false)
     private String username;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -29,6 +31,7 @@ public class Customer {
     @Column(name = "realname", nullable = false)
     private String realName;
 
+    @JsonIgnore
     @Column(name = "product_id", nullable = true)
     private Integer productId;
 

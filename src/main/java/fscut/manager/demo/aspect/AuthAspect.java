@@ -43,9 +43,9 @@ public class AuthAspect {
         if(args[0] instanceof Integer){
             productId = (Integer)args[0];
         }
-        if(customerRepository.findRoleByCustomerIdAndProductId(userId, productId) == null){
-            throw new UnauthorizedException();
-        }
+//        if(customerRepository.findRoleByCustomerIdAndProductId(userId, productId) == null){
+//            throw new UnauthorizedException();
+//        }
     }
 
 }
