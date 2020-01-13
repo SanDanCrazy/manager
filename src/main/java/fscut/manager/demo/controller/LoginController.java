@@ -16,27 +16,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 @Api(value = "首页接口", tags = {"首页接口"})
 @RestController
-@CrossOrigin
 public class LoginController {
 
     private Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Resource
     private UserService userService;
-
-    @Resource
-    private MessageService messageService;
 
     @Resource
     private ProductService productService;
@@ -59,10 +55,6 @@ public class LoginController {
             String newToken = userService.generateJwtToken(user.getUsername());
             response.setHeader("token", newToken);
 
-            Integer unreadMessageNum = messageService.getUnreadMessageNum(user.getUsername());
-            if (unreadMessageNum != 0) {
-                //webSocketServer.sendInfo("您共有" + unreadMessageNum + "条消息未读", user.getUsername());
-            }
             Integer userId = customerService.getIdByUsername(user.getUsername());
             String roleCode = customerService.getRoleCodeByUserId(userId);
             return ResponseEntity.ok(roleCode);
@@ -94,20 +86,5 @@ public class LoginController {
         UserDto userDto = (UserDto) subject.getPrincipal();
         List<Product> products = productService.showProductList(userDto.getUserId());
         return ResponseEntity.ok(products);
-    }
-
-    @PostMapping("upload")
-    public String upload(@RequestParam("file") MultipartFile file){
-        try{
-            String filename = System.currentTimeMillis() + file.getOriginalFilename();
-            String destFileName = "D:/upload"+ File.separator+filename;
-            File destFile = new File(destFileName);
-            destFile.getParentFile().mkdirs();
-            file.transferTo(destFile);
-            return destFileName;
-        }catch(IOException e){
-            e.printStackTrace();
-            return "上传失败";
-        }
     }
 }
