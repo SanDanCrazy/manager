@@ -9,6 +9,7 @@ import fscut.manager.demo.exception.CustomerAlreadyExitsException;
 import fscut.manager.demo.exception.CustomerNotExitsException;
 import fscut.manager.demo.service.CustomerService;
 import fscut.manager.demo.vo.CustomerAuthVO;
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @RestController
 @CrossOrigin
 @RequestMapping("customer")
+@Api(tags = {"用户管理接口"})
 public class CustomerController {
 
     @Resource

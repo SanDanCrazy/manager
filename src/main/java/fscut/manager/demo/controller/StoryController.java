@@ -17,6 +17,8 @@ import fscut.manager.demo.util.websocket.WebSocketServer;
 import fscut.manager.demo.vo.StoryDetailVO;
 import fscut.manager.demo.vo.StoryVO;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
@@ -50,7 +52,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@Api(value = "需求controller",tags = {"用户操作接口"})
+@Api(value = "需求相关接口",tags = {"需求相关接口"})
 @RequestMapping("story")
 @Slf4j
 public class StoryController {
@@ -117,10 +119,15 @@ public class StoryController {
         return ResponseEntity.ok(updatedStory);
     }
 
-    @ApiOperation(value = "获取产品所有需求",notes = "验证用户权限")
+    @ApiOperation(value = "获取产品所有需求",notes = "通过分页获取产品需求列表，需要传入产品ID，页面数和页面大小")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id",value = "产品ID",required = true,dataType = "int",paramType = "query",example = "1"),
+            @ApiImplicitParam(name = "page",value = "页面数",required = true,dataType = "int",paramType = "query",example = "1"),
+            @ApiImplicitParam(name = "size",value = "页面大小",required = true,dataType = "int",paramType = "query",example = "1"),
+    })
     @JsonView(Story.StorySimpleView.class)
-    @GetMapping("product/{id}")
-    public ResponseEntity<Page<Story>> showProductStories(@PathVariable("id") Integer id, Integer page, Integer size) {
+    @GetMapping("product")
+    public ResponseEntity<Page<Story>> showProductStories(Integer id, Integer page, Integer size) {
         userService.userAllowed(id);
 
         Subject subject = SecurityUtils.getSubject();
@@ -141,6 +148,7 @@ public class StoryController {
         return ResponseEntity.ok(storyDetailVO);
     }
 
+    @ApiOperation(value = "返回一个需求所有的历史版本",notes = "通过传入表示需求唯一标识storyUPK,获取该需求所有版本")
     @JsonView(Story.StorySimpleView.class)
     @PostMapping("history")
     public ResponseEntity<List<Story>> showStoryHistory(@RequestBody StoryUPK storyUPK){

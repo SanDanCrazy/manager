@@ -5,6 +5,7 @@ import fscut.manager.demo.entity.Product;
 import fscut.manager.demo.service.CustomerService;
 import fscut.manager.demo.service.ProductService;
 import fscut.manager.demo.vo.CustomerAuthVO;
+import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping("product")
+@Api(value = "产品相关接口",tags = {"产品相关接口"})
 public class ProductController {
 
     @Resource

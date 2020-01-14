@@ -5,6 +5,7 @@ import fscut.manager.demo.dto.UserDto;
 import fscut.manager.demo.service.CustomerService;
 import fscut.manager.demo.service.MessageService;
 import fscut.manager.demo.vo.MessageVO;
+import io.swagger.annotations.Api;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 
@@ -16,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("message")
+@Api(tags = {"消息相关接口"})
 public class MessageController{
 
      @Resource
