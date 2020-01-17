@@ -96,7 +96,6 @@ public class Story implements Serializable {
         this.storyUPK = storyUPK;
     }
 
-
     public String getOrigin() {
         return origin;
     }
@@ -132,7 +131,6 @@ public class Story implements Serializable {
         this.storyStatus = storyStatus;
     }
 
-
     public String getDescription() {
         return description;
     }
@@ -140,7 +138,6 @@ public class Story implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-
 
     public String getConclusion() {
         return conclusion;
@@ -150,7 +147,6 @@ public class Story implements Serializable {
         this.conclusion = conclusion;
     }
 
-
     public Integer getDesignId() {
         return designId;
     }
@@ -158,7 +154,6 @@ public class Story implements Serializable {
     public void setDesignId(Integer designId) {
         this.designId = designId;
     }
-
 
     public Integer getDevId() {
         return devId;
@@ -168,7 +163,6 @@ public class Story implements Serializable {
         this.devId = devId;
     }
 
-
     public Integer getTestId() {
         return testId;
     }
@@ -176,7 +170,6 @@ public class Story implements Serializable {
     public void setTestId(Integer testId) {
         this.testId = testId;
     }
-
 
     public Date getTestTime() {
         return testTime;
@@ -186,7 +179,6 @@ public class Story implements Serializable {
         this.testTime = testTime;
     }
 
-
     public Integer getEditId() {
         return editId;
     }
@@ -194,7 +186,6 @@ public class Story implements Serializable {
     public void setEditId(Integer editId) {
         this.editId = editId;
     }
-
 
     public java.util.Date getUpdateTime() {
         return updateTime;

@@ -64,13 +64,7 @@ public class StoryController {
     private UserService userService;
 
     @Resource
-    private CustomerService customerService;
-
-    @Resource
     private MessageService messageService;
-
-    @Resource
-    private WebSocketServer webSocketServer;
 
     @Resource
     private IpConfiguration ipConfiguration;
@@ -152,7 +146,6 @@ public class StoryController {
     @JsonView(Story.StorySimpleView.class)
     @PostMapping("history")
     public ResponseEntity<List<Story>> showStoryHistory(@RequestBody StoryUPK storyUPK){
-        System.out.println(storyUPK);
         userService.userAllowed(storyUPK.getProductId());
 
         List<Story> stories = storyService.getStoryHistory(storyUPK);
@@ -169,6 +162,8 @@ public class StoryController {
     @JsonView(Story.StorySimpleView.class)
     @PostMapping("selectStory")
     public ResponseEntity<Page<Story>> selectStory(Integer productId, String startTime, String endTime, String origin, String userInput, Integer page, Integer size, String sortByPutTime) {
+        userService.userAllowed(productId);
+
         Sort.Direction sort = Sort.Direction.DESC;
         String desc = "descending";
         String asc = "ascending";
@@ -186,6 +181,8 @@ public class StoryController {
     @JsonView({Story.StorySimpleView.class})
     @GetMapping("findStory")
     public ResponseEntity<List<Story>> findStoryById(Integer productId, Integer storyId) {
+        userService.userAllowed(productId);
+
         List<Story> storyList = storyService.getStoryByStoryId(productId, storyId);
         return ResponseEntity.ok(storyList);
     }
@@ -193,6 +190,7 @@ public class StoryController {
     @JsonView(Customer.SimpleView.class)
     @GetMapping("customerList")
     public ResponseEntity<CustomerListDTO> getCustomers(Integer productId) {
+        userService.userAllowed(productId);
 
         CustomerListDTO customerListDTO = storyService.getCustomers(productId);
 
@@ -213,7 +211,8 @@ public class StoryController {
         headers.add("ETag", String.valueOf(System.currentTimeMillis()));
 
         CsvUtils.download(storyService.getStoriesByProductId(productId, user.getUserId()), response);
-        File file = new File("D:\\writeCSV.csv");
+        String pathName = "D:\\writeCSV.csv";
+        File file = new File(pathName);
         return ResponseEntity.ok().headers(headers).contentLength(file.length()).
                 contentType(MediaType.parseMediaType("application/octet-stream")).
                 body(new FileSystemResource(file));

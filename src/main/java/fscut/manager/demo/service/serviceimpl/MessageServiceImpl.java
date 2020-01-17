@@ -68,13 +68,13 @@ public class MessageServiceImpl implements MessageService {
         Integer designId = story.getDesignId();
         Integer devId = story.getDevId();
         Integer testId = story.getTestId();
-        if (designId != null) {
+        if (designId != null && WebSocketServer.webSocketMap.get(customerService.getUsernameById(designId)) != null) {
             webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(designId));
         }
-        if (devId != null) {
+        if (devId != null && WebSocketServer.webSocketMap.get(customerService.getUsernameById(devId)) != null) {
             webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(devId));
         }
-        if (testId != null) {
+        if (testId != null && WebSocketServer.webSocketMap.get(customerService.getUsernameById(testId)) != null) {
             webSocketServer.sendInfo(message.getContent(), customerService.getUsernameById(testId));
         }
     }

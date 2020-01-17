@@ -38,6 +38,7 @@ public interface MessageService {
     /**
      * 读取用户所有未读消息
      * @param customerId 用户id
+     * @return 读取条数
      */
     Integer readAll(Integer customerId);
 
