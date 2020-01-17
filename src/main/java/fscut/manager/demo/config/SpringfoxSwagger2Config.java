@@ -37,7 +37,7 @@ public class SpringfoxSwagger2Config {
     }
 
     private ApiInfo swaggerDemoApiInfo(){
-        Contact contact = new Contact("hello", "http://localhost:8080/","1017243931@qq.com");
+        Contact contact = new Contact("caiheng", "http://10.1.13.154:8080/login","1017243931@qq.com");
         return new ApiInfoBuilder()
                 .contact(contact)
                 .title("RestFul API")

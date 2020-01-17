@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 @Embeddable
 @Data
-@ApiModel(value = "需求唯一标识")
+@ApiModel()
 public class StoryUPK implements Serializable{
 
     @JsonView(Story.StorySimpleView.class)

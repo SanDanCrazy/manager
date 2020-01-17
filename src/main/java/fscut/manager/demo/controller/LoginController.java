@@ -23,7 +23,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-@Api(value = "首页接口", tags = {"首页接口"})
+@Api(value = "首页接口")
 @RestController
 public class LoginController {
 

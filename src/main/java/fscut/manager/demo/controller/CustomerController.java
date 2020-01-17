@@ -23,7 +23,8 @@ import java.util.Optional;
 @RestController
 @CrossOrigin
 @RequestMapping("customer")
-@Api(tags = {"用户管理接口"},)
+@Api(tags = {"用户管理接口"}
+)
 public class CustomerController {
 
     @Resource

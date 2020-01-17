@@ -16,10 +16,7 @@ import fscut.manager.demo.util.CsvUtils;
 import fscut.manager.demo.util.websocket.WebSocketServer;
 import fscut.manager.demo.vo.StoryDetailVO;
 import fscut.manager.demo.vo.StoryVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
@@ -118,6 +115,9 @@ public class StoryController {
             @ApiImplicitParam(name = "id",value = "产品ID",required = true,dataType = "int",paramType = "query",example = "1"),
             @ApiImplicitParam(name = "page",value = "页面数",required = true,dataType = "int",paramType = "query",example = "1"),
             @ApiImplicitParam(name = "size",value = "页面大小",required = true,dataType = "int",paramType = "query",example = "1"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200,message = "ok"),
     })
     @JsonView(Story.StorySimpleView.class)
     @GetMapping("product")
